@@ -8,4 +8,4 @@ CXXFLAGS = ["-std=gnu++23","-Wall","-Wextra","-Wshadow","-Wfloat-equal","-fsanit
 
 [[languages.cpp.environments]]
 CXX = "g++"
-CXXFLAGS = ["-std=gnu++23","-Wall","-Wextra","-Wshadow","-Wfloat-equal","-fsanitize=undefined","-D_GLIBCXX_DEBUG","-g"]
+CXXFLAGS = ["-std=gnu++23","-Wall","-Wextra","-Wshadow","-Wfloat-equal","-fsanitize=undefined","-D_GLIBCXX_ASSERTIONS","-g"]

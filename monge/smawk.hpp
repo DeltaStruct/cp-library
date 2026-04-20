@@ -1,0 +1,1 @@
+constexpr int smawk = 0;

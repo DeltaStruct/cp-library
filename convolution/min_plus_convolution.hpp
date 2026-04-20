@@ -1,7 +1,6 @@
 #pragma once
 #include "assets/stdc++.hpp"
 #include "monge/monotone_minima.hpp"
-#include "monge/smawk.hpp"
 #include "check/convex.hpp"
 
 template<typename T>
@@ -19,14 +18,14 @@ vector<T> min_plus_convolution(const vector<T>& A,const vector<T>& B){
     return R;
   }
   if (a){
-    vector C = constexpr_if(use_smawk)(smawk,monotone_minima)(h+w-1,w,[&](int i,int k,int j){
+    vector C = monotone_minima(h+w-1,w,[&](int i,int k,int j){
       return (i<j)||(i-k<h&&B[k]+A[i-k]<=B[j]+A[i-j]);
     });
     for (int i(0);i < h+w-1;++i) R[i] = B[C[i]]+A[i-C[i]];
     return R;
   }
   if (b){
-    vector C = constexpr_if(use_smawk)(smawk,monotone_minima)(h+w-1,h,[&](int i,int k,int j){
+    vector C = monotone_minima(h+w-1,h,[&](int i,int k,int j){
       return (i<j)||(i-k<w&&A[k]+B[i-k]<=A[j]+B[i-j]);
     });
     for (int i(0);i < h+w-1;++i) R[i] = A[C[i]]+B[i-C[i]];

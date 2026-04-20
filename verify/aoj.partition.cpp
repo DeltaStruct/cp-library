@@ -17,5 +17,5 @@ int main(){
     single(0),
     single((int)-1e9)
   )).dist;
-  cout << *max_element(R.begin()+1,R.end()) << '\n';
+  cout << R.back() << '\n';
 }

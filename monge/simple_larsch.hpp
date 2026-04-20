@@ -20,6 +20,7 @@ larsch_ret_t<return_type(value,F)> simple_larsch(int n,F f){
   auto update = [&](int x,int y) -> void {
     if (!f.select(x,R[x],P[x],R[y],y)) R[x] = f.value(x,R[y],y),P[x] = y;
   };
+  update(n,0);
   pair<int,int>* stk = new pair<int,int>[countr_zero(bit_ceil((unsigned int)n))];
   int top = -1,mid = 0,l = 0,r = n;
   for (;r > 1;r=mid){

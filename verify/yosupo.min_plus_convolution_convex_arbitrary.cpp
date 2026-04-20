@@ -1,4 +1,4 @@
-// comperitive-verifier: PROBLEM https://judge.yosupo.jp/problem/min_plus_convolution_convex_arbitrary
+// competitive-verifier: PROBLEM https://judge.yosupo.jp/problem/min_plus_convolution_convex_arbitrary
 #include "assets/stdc++.hpp"
 #include "convolution/min_plus_convolution.hpp"
 

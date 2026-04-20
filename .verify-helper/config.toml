@@ -1,0 +1,11 @@
+[[languages.cpp.environments]]
+CXX = "g++"
+CXXFLAGS = ["-std=gnu++23","-Wall","-Wextra","-O2"]
+
+[[languages.cpp.environments]]
+CXX = "g++"
+CXXFLAGS = ["-std=gnu++23","-Wall","-Wextra","-Wshadow","-Wfloat-equal","-fsanitize=undefined","-O2"]
+
+[[languages.cpp.environments]]
+CXX = "g++"
+CXXFLAGS = ["-std=gnu++23","-Wall","-Wextra","-Wshadow","-Wfloat-equal","-fsanitize=undefined","-D_GLIBCXX_DEBUG","-g"]

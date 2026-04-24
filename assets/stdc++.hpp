@@ -122,7 +122,19 @@ constexpr bool false_v = false;
 #define has_memvar(mem,...) (requires(__VA_ARGS__ t){ t.mem; })
 #define has_memvar_t(type,mem,...) (has_memvar(mem,__VA_ARGS__)&&convertible_to<decltype(declval<__VA_ARGS__>().mem),type>)
 
-#define function_alias(name,call) struct { template<class... Args> auto operator()(Args&&... args) -> decltype(call(std::forward<Args>(args)...)) { return call(std::forward<Args>(args)...); } } name
+#define function_alias(name,call) struct { template<class... Args> auto operator()(Args&&... args) -> decltype(call(std::forward<Args>(args)...)) { return call(std::forward<Args>(args)...); } } name [[maybe_unused]]
+
+template<typename T>
+T input(){
+  T ret; cin >> ret;
+  return ret;
+}
+
+template<typename T>
+T& input(T& x){
+  cin >> x;
+  return x;
+}
 
 #include "assets/zaatu.hpp"
 #include "assets/config.hpp"

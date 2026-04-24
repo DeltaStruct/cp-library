@@ -4,6 +4,7 @@
 
 struct modint {
   long long v;
+  modint() : v(0) {}
   modint(int _v) : v(_v) {}
   modint& operator+=(modint x){
     (v += x.v) %= 998244353;
@@ -23,8 +24,8 @@ struct modint {
 int main(){
   ios::sync_with_stdio(false),cin.tie(0);
   int n; cin >> n;
-  vector<int> A(1<<n); for (int& a:A) cin >> a;
-  vector<int> B(1<<n); for (int& a:A) cin >> a;
+  vector<modint> A(1<<n); for (auto& a:A) a = modint(input<int>());
+  vector<modint> B(1<<n); for (auto& a:B) a = modint(input<int>());
   for (auto a:bitwise_and_convolution(A,B)) cout << a.v << ' ';
   cout << endl;
 }

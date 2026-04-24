@@ -1,3 +1,4 @@
+// competitive-verifier: PROBLEM https://judge.yosupo.jp/problem/dynamic_graph_vertex_add_component_sum
 #include "assets/stdc++.hpp"
 #include "graph/offline_dynamic_connectivity.hpp"
 

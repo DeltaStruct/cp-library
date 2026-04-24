@@ -1,9 +1,10 @@
+#pragma once
 #include "convolution/zeta_mobius_transform.hpp"
 
 template<typename T>
 requires requires(T v){ v *= v; }
 vector<T> bitwise_or_convolution(vector<T> A,vector<T> B){
-  A = subset_zeta(A),B = subset_zeta(B);
+  A = subset_zeta(std::move(A)),B = subset_zeta(std::move(B));
   for (int i(0);i < (int)A.size();++i) A[i] *= B[i];
-  return subset_mobius(A);
+  return subset_mobius(std::move(A));
 }

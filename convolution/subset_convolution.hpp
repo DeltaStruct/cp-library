@@ -9,7 +9,8 @@ vector<T> subset_convolution(vector<T> A,vector<T> B){
   A.resize(n),B.resize(n);
   struct rank {
     vector<T> A;
-    rank(int n,int i,T&& v) : A(n) {
+    rank() = default;
+    rank(int n,int i,T&& v) : A(n+1) {
       A[popcount((unsigned int)i)] = std::move(v);
     }
     rank& operator+=(rank& x){
@@ -23,7 +24,7 @@ vector<T> subset_convolution(vector<T> A,vector<T> B){
     rank& operator*=(rank& x){
       vector<T> R(A.size());
       T tmp;
-      for (int i(0);i < (int)A.size();++i) for (int k(0);k < (int)A.size();++k){
+      for (int i(0);i < (int)A.size();++i) for (int k(0);k < (int)A.size()-i;++k){
         tmp = A[i];
         R[i+k] += (tmp *= x.A[k]);
       }

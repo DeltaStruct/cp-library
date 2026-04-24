@@ -3,7 +3,7 @@
 #include "convolution/bitwise_and_convolution.hpp"
 
 struct modint {
-  long long v;
+  int v;
   modint() : v(0) {}
   modint(int _v) : v(_v) {}
   modint& operator+=(modint x){
@@ -17,7 +17,9 @@ struct modint {
     return *this;
   }
   modint& operator*=(modint x){
-    (v *= x.v) %= 998244353;
+    long long r = v;
+    (r *= x.v) %= 998244353;
+    v = r;
     return *this;
   }
 };

@@ -9,7 +9,7 @@ struct segment_tree {
   cex segment_tree(F _f) : n(0),segtree(0),f(std::move(_f)) {}
   cex segment_tree(int _n,F _f) : n(_n),segtree(2*n),f(std::move(_f)) {
     for (int i(0);i < n;++i){
-      if cex (requires (F f,T x){ f.id(x); }) segtree[n+i] = f.id(i);
+      if cex (invocable_r(T,idi,F,int)) segtree[n+i] = f.idi(i);
       else segtree[n+i] = f.id();
     }
     build();

@@ -1,7 +1,12 @@
+#pragma once
 #include "assets/stdc++.hpp"
+#include <iterator>
+
+template<typename T,class F>
+concept union_find_c = (same_as<T,void>&&same_as<F,void>)||invocable_r(void,merge,F,T&,T&);
 
 template<typename T = void,class F = void>
-requires (same_as<T,void>&&same_as<F,void>)||invocable(merge,F,T&,T&)
+requires union_find_c<T,F>
 struct union_find;
 
 template<>
@@ -21,14 +26,14 @@ struct union_find<void,void> {
   virtual int leader(int x){
     return leader_compress(x);
   }
-  bool connect(int x,int y){
+  virtual bool connect(int x,int y){
     x = leader(x),y = leader(y);
     if (x==y) return false;
     if (sz[x]>sz[y]) swap(x,y);
     par[x] = y,sz[y] += sz[x],swap(lst[x],lst[y]);
     return true;
   }
-  bool connected(int x,int y){
+  [[nodiscard]] bool connected(int x,int y){
     return (leader(x)==leader(y));
   }
   vector<int> enumeration(int x,int y = -407){
@@ -38,17 +43,45 @@ struct union_find<void,void> {
     return ret;
   }
   int size(){
-    return par.size();
+    return (int)par.size();
   }
   int size(int x){
     return sz[leader(x)];
   }
 };
 
-template<typename T = void,class F = void>
+template<typename T,class F>
+requires union_find_c<T,F>
 struct union_find : public union_find<void,void> {
   using base = union_find<void,void>;
   vector<T> val;
   F f;
-  union_find(int _n,F _f) : base::base(_n),val(_n),f(std::move(_f)) {}
+  union_find(int _n,F _f) : base::union_find(_n),val(_n),f(std::move(_f)) {
+    if constexpr (invocable_r(T,idi,F,int)) for (int i(0);i < _n;++i) val[i] = f.idi(i);
+    else if constexpr (invocable_r(T,id,F)) fill(val.begin(),val.end(),f.id());
+  }
+  template<input_iterator I>
+  union_find(I a,I b,F _f) : base::union_find(distance(a,b)),val(a,b),f(std::move(_f)) {}
+  template<rngs::range C>
+  union_find(C&& A,F _f) : base::union_find(rngs::distance(A)),val(A),f(std::move(_f)) {}
+  bool connect(int x,int y){
+    x = leader(x),y = leader(y);
+    if (base::connect(x,y)){
+      if (par[x]==y) swap(x,y);
+      f.merge(x,y);
+      return true;
+    }
+    return false;
+  }
 };
+
+union_find(int) -> union_find<void,void>;
+
+template<class F>
+union_find(int,F) -> union_find<remove_cvref_t<arg_type(0,merge,F)>,F>;
+
+template<class F,input_iterator I>
+union_find(I,I,F) -> union_find<iter_value_t<I>,F>;
+
+template<class F,rngs::range C>
+union_find(C&&,F) -> union_find<rngs::range_value_t<C>,F>;

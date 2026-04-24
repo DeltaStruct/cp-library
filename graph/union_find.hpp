@@ -1,6 +1,5 @@
 #pragma once
 #include "assets/stdc++.hpp"
-#include <iterator>
 
 template<typename T,class F>
 concept union_find_c = (same_as<T,void>&&same_as<F,void>)||invocable_r(void,merge,F,T&,T&);
@@ -56,22 +55,29 @@ struct union_find : public union_find<void,void> {
   using base = union_find<void,void>;
   vector<T> val;
   F f;
-  union_find(int _n,F _f) : base::union_find(_n),val(_n),f(std::move(_f)) {
+  union_find(int _n,F _f) : base(_n),val(_n),f(std::move(_f)) {
     if constexpr (invocable_r(T,idi,F,int)) for (int i(0);i < _n;++i) val[i] = f.idi(i);
     else if constexpr (invocable_r(T,id,F)) fill(val.begin(),val.end(),f.id());
   }
   template<input_iterator I>
-  union_find(I a,I b,F _f) : base::union_find(distance(a,b)),val(a,b),f(std::move(_f)) {}
+  union_find(I a,I b,F _f) : base::union_find((int)distance(a,b)),val(a,b),f(std::move(_f)) {}
   template<rngs::range C>
-  union_find(C&& A,F _f) : base::union_find(rngs::distance(A)),val(A),f(std::move(_f)) {}
+  union_find(C&& A,F _f) : base::union_find((int)rngs::distance(A)),val(A),f(std::move(_f)) {}
   bool connect(int x,int y){
     x = leader(x),y = leader(y);
     if (base::connect(x,y)){
-      if (par[x]==y) swap(x,y);
-      f.merge(x,y);
+      if (par[x]!=y) swap(x,y);
+      f.merge(val[y],val[x]);
       return true;
     }
     return false;
+  }
+  const T& value(int x){
+    return val[leader(x)];
+  }
+  template<class... Args>
+  void add(int x,Args&&... args) requires invocable_r(void,add,F,T&,Args&&...) {
+    f.add(val[leader(x)],std::forward<Args>(args)...);
   }
 };
 

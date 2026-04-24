@@ -59,8 +59,8 @@ using origin_class = typename function_info<F>::origin_class;
 
 #define origin_class(mem,...) origin_class<decltype(&remove_cvref_t<__VA_ARGS__>::mem)>
 
-#define invocable(mem,F,...) ([]<class... Args>(){ return requires(F f,Args... args){ f.mem(args...); }; }.template operator()<__VA_ARGS__>())
-#define invocable_r(R,mem,F,...) ([]<class... Args>(){ return requires(F f,Args... args){ { f.mem(args...) } -> convertible_to<R>; }; }.template operator()<__VA_ARGS__>())
+#define invocable(mem,F,...) ([]<class... IArgs>(){ return requires(F f,IArgs... args){ f.mem(args...); }; }.template operator()<__VA_ARGS__>())
+#define invocable_r(R,mem,F,...) ([]<class... IArgs>(){ return requires(F f,IArgs... args){ { f.mem(args...) } -> convertible_to<R>; }; }.template operator()<__VA_ARGS__>())
 
 template<class F>
 using args_tuple = typename function_info<F>::args_tuple;

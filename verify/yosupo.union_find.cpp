@@ -1,3 +1,4 @@
+// competitive-verifier: PROBLEM https://judge.yosupo.jp/problem/unionfind
 #include "assets/stdc++.hpp"
 #include "graph/union_find.hpp"
 

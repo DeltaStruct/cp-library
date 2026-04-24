@@ -1,5 +1,4 @@
 #pragma once
-#include "assets/stdc++.hpp"
 #include "convolution/zeta_mobius_transform.hpp"
 
 template<typename T>

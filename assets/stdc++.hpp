@@ -1,6 +1,7 @@
 #pragma once
 #include "assets/guide.hpp"
 #include <bits/stdc++.h>
+#include <concepts>
 using namespace std;
 namespace rngs = std::ranges;
 
@@ -117,6 +118,11 @@ constexpr bool false_v = false;
 #define constexpr_if(...) [](auto&& cia,auto&& cib){ if constexpr (__VA_ARGS__) return cia; else return cib; }
 
 #define mem_or_call(mem,obj,...) (constexpr_if(__VA_ARGS__)(obj.*mem,obj))
+
+#define has_memvar(mem,...) (requires(__VA_ARGS__ t){ t.mem; })
+#define has_memvar_t(type,mem,...) (has_memvar(mem,__VA_ARGS__)&&convertible_to<decltype(declval<__VA_ARGS__>().mem),type>)
+
+#define function_alias(name,call) struct { template<class... Args> auto operator()(Args&&... args) -> decltype(call(std::forward<Args>(args)...)) { return call(std::forward<Args>(args)...); } } name
 
 #include "assets/zaatu.hpp"
 #include "assets/config.hpp"

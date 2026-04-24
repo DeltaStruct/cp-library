@@ -7,7 +7,8 @@ struct modint {
   modint() : v(0) {}
   modint(int _v) : v(_v) {}
   modint& operator+=(modint x){
-    (v += x.v) %= 998244353;
+    v += x.v;
+    if (v>998244352) v -= 998244353;
     return *this;
   }
   modint& operator-=(modint x){

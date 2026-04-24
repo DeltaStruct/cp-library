@@ -1,43 +1,28 @@
 #pragma once
 #include "assets/stdc++.hpp"
-#include "convolution/bitwise_or_convolution.hpp"
+#include "convolution/zeta_mobius_transform.hpp"
 
 template<typename T>
 requires requires(T v){ v += v; v -= v; v *= v; }
 vector<T> subset_convolution(vector<T> A,vector<T> B){
   int s = countr_zero(bit_ceil(max(A.size(),B.size()))),n = 1<<s;
   A.resize(n),B.resize(n);
-  struct rank {
-    vector<T> A;
-    rank() = default;
-    rank(int n,int i,T&& v) : A(n+1) {
-      A[popcount((unsigned int)i)] = std::move(v);
+  vector X(s+1,vector<T>(n)),Y = X;
+  for (int i(0);i < n;++i){
+    X[popcount((unsigned int)i)][i] = A[i],Y[popcount((unsigned int)i)][i] = B[i];
+  }
+  for (int i(0);i <= s;++i){
+    X[i] = subset_zeta(std::move(X[i])),Y[i] = subset_zeta(std::move(Y[i]));
+  }
+  vector<T> res(s+2);
+  T tmp;
+  for (int i(0);i < n;++i){
+    for (int k(0);k <= s;++k) for (int j(0);j <= s-k;++j){
+      tmp = X[k][i],res[k+j] += (tmp *= Y[j][i]);
     }
-    rank& operator+=(rank& x){
-      for (int i(0);i < (int)A.size();++i) A[i] += x.A[i];
-      return *this;
-    }
-    rank& operator-=(rank& x){
-      for (int i(0);i < (int)A.size();++i) A[i] -= x.A[i];
-      return *this;
-    }
-    rank& operator*=(rank& x){
-      vector<T> R(A.size());
-      T tmp;
-      for (int i(0);i < (int)A.size();++i) for (int k(0);k < (int)A.size()-i;++k){
-        tmp = A[i];
-        R[i+k] += (tmp *= x.A[k]);
-      }
-      A = std::move(R);
-      return *this;
-    }
-    T& operator[](int x){
-      return A[popcount((unsigned int)x)];
-    }
-  };
-  vector<rank> X(n),Y(n);
-  for (int i(0);i < n;++i) X[i] = rank(s,i,std::move(A[i])),Y[i] = rank(s,i,std::move(B[i]));
-  X = bitwise_or_convolution(std::move(X),std::move(Y));
-  for (int i(0);i < n;++i) A[i] = X[i][i];
+    for (int k(0);k <= s;++k) X[k][i] = res[k],res[k] = T();
+  }
+  for (int i(0);i <= s;++i) X[i] = subset_mobius(std::move(X[i]));
+  for (int i(0);i < n;++i) A[i] = X[popcount((unsigned int)i)][i];
   return A;
 }

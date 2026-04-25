@@ -1,17 +1,9 @@
 #pragma once
 #include "assets/stdc++.hpp"
 
-template<typename T,class F>
-concept union_find_c = (same_as<T,void>&&same_as<F,void>)||invocable_r(void,merge,F,T&,T&);
-
-template<typename T = void,class F = void>
-requires union_find_c<T,F>
-struct union_find;
-
-template<>
-struct union_find<void,void> {
-  vector<int> par,sz,lst;
-  union_find(int n = 0) : par(n,-1),sz(n,1),lst(n) { iota(lst.begin(),lst.end(),0); }
+struct fast_union_find {
+  vector<int> par,sz;
+  fast_union_find(int n = 0) : par(n,-1),sz(n,1) {}
   int leader_compress(int x){
     int ret = x;
     while(par[ret]!=-1) ret = par[ret];
@@ -29,8 +21,36 @@ struct union_find<void,void> {
     x = leader(x),y = leader(y);
     if (x==y) return false;
     if (sz[x]>sz[y]) swap(x,y);
-    par[x] = y,sz[y] += sz[x],swap(lst[x],lst[y]);
+    par[x] = y,sz[y] += sz[x];
     return true;
+  }
+  int size(){
+    return (int)par.size();
+  }
+  int size(int x){
+    return sz[leader(x)];
+  }
+};
+
+template<typename T,class F>
+concept union_find_c = (same_as<T,void>&&same_as<F,void>)||invocable_r(void,merge,F,T&,T&);
+
+template<typename T = void,class F = void>
+requires union_find_c<T,F>
+struct union_find;
+
+template<>
+struct union_find<void,void> : public fast_union_find {
+  using base = fast_union_find;
+  vector<int> lst;
+  union_find(int n = 0) : base(n),lst(n) { iota(lst.begin(),lst.end(),0); }
+  bool connect(int x,int y){
+    x = leader(x),y = leader(y);
+    if (base::connect(x,y)){
+      swap(lst[x],lst[y]);
+      return true;
+    }
+    return false;
   }
   [[nodiscard]] bool connected(int x,int y){
     return (leader(x)==leader(y));
@@ -40,12 +60,6 @@ struct union_find<void,void> {
     vector<int> ret(y);
     for (int i(0);i < y;++i,x=lst[x]) ret[i] = x;
     return ret;
-  }
-  int size(){
-    return (int)par.size();
-  }
-  int size(int x){
-    return sz[leader(x)];
   }
 };
 

@@ -17,3 +17,14 @@ struct range_parallel_union_find : public union_find<T,F> {
     connect_internal(x,y,s-1),connect_internal(x+d-(1<<s),y+d-(1<<s),s-1);
   }
 };
+
+range_parallel_union_find(int) -> range_parallel_union_find<void,void>;
+
+template<class F>
+range_parallel_union_find(int,F) -> range_parallel_union_find<remove_cvref_t<arg_type(0,merge,F)>,F>;
+
+template<class F,input_iterator I>
+range_parallel_union_find(I,I,F) -> range_parallel_union_find<iter_value_t<I>,F>;
+
+template<class F,rngs::range C>
+range_parallel_union_find(C&&,F) -> range_parallel_union_find<rngs::range_value_t<C>,F>;

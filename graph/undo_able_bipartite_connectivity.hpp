@@ -24,3 +24,14 @@ struct undo_able_bipartite_connectivity : public incremental_bipartite_connectiv
     }
   }
 };
+
+undo_able_bipartite_connectivity(int) -> undo_able_bipartite_connectivity<void,void>;
+
+template<class F>
+undo_able_bipartite_connectivity(int,F) -> undo_able_bipartite_connectivity<remove_cvref_t<arg_type(0,merge,F)>,F>;
+
+template<class F,input_iterator I>
+undo_able_bipartite_connectivity(I,I,F) -> undo_able_bipartite_connectivity<iter_value_t<I>,F>;
+
+template<class F,rngs::range C>
+undo_able_bipartite_connectivity(C&&,F) -> undo_able_bipartite_connectivity<rngs::range_value_t<C>,F>;

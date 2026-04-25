@@ -47,3 +47,14 @@ struct undo_able_union_find : public union_find<T,F> {
     for (;x!=-1;x=par[x]) base::f.add(base::val[x],std::forward<Args>(args)...);
   }
 };
+
+undo_able_union_find(int) -> undo_able_union_find<void,void>;
+
+template<class F>
+undo_able_union_find(int,F) -> undo_able_union_find<remove_cvref_t<arg_type(0,merge,F)>,F>;
+
+template<class F,input_iterator I>
+undo_able_union_find(I,I,F) -> undo_able_union_find<iter_value_t<I>,F>;
+
+template<class F,rngs::range C>
+undo_able_union_find(C&&,F) -> undo_able_union_find<rngs::range_value_t<C>,F>;

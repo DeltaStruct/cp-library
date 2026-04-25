@@ -1,4 +1,4 @@
-// competitive-verifier: LOCALCASE verify/localcase/joi/voltage
+// competitive-verifier: LOCALCASE //verify/localcase/joi/voltage
 #include "assets/stdc++.hpp"
 #include "graph/offline_dynamic_bipartite_connectivity.hpp"
 

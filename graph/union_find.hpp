@@ -25,7 +25,7 @@ struct union_find<void,void> {
   virtual int leader(int x){
     return leader_compress(x);
   }
-  virtual bool connect(int x,int y){
+  bool connect(int x,int y){
     x = leader(x),y = leader(y);
     if (x==y) return false;
     if (sz[x]>sz[y]) swap(x,y);

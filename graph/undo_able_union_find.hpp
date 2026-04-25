@@ -9,7 +9,7 @@ struct undo_able_union_find : public union_find<T,F> {
   using base::union_find;
   using base::par,base::sz,base::lst;
   stack<pair<int,int>> S;
-  int inner;
+  int inner = 0;
   virtual int leader(int x){
     return base::leader_not_compress(x);
   }

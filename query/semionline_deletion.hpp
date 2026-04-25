@@ -110,3 +110,5 @@ struct semionline_deletion {
     return dummy_iterator{*this};
   }
 };
+
+#include "query/offline_deletion.hpp"

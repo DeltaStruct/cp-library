@@ -13,9 +13,8 @@ struct guide_sodc {
   }
 };
 
-template<typename T = void,class F = void>
-struct semionline_dynamic_connectivity : public semionline_deletion<guide_sodc<undo_able_union_find<T,F>>>,undo_able_union_find<T,F> {
-  using uauf = undo_able_union_find<T,F>;
+template<typename T = void,class F = void,class uauf = undo_able_union_find<T,F>>
+struct semionline_dynamic_connectivity : public semionline_deletion<guide_sodc<uauf>>,uauf {
   using guide = guide_sodc<uauf>;
   using deletion = semionline_deletion<guide>;
   semionline_dynamic_connectivity(int n,int q) : deletion(q,guide{*this}),uauf(n) {}
@@ -24,6 +23,15 @@ struct semionline_dynamic_connectivity : public semionline_deletion<guide_sodc<u
   semionline_dynamic_connectivity(I a,I b,int q,F f) : deletion(q,guide{*this}),uauf(a,b,std::move(f)) {}
   template<rngs::range C>
   semionline_dynamic_connectivity(C&& A,int q,F f) : deletion(q,guide{*this}),uauf(std::forward<C&&>(A),std::move(f)) {}
+  private:
+  using uauf::connect,uauf::undo,uauf::get_state,uauf::snapshot,uauf::rollback;
+};
+
+template<class uauf>
+struct semionline_dynamic_connectivity<void,void,uauf> : public semionline_deletion<guide_sodc<uauf>>,uauf {
+  using guide = guide_sodc<uauf>;
+  using deletion = semionline_deletion<guide>;
+  semionline_dynamic_connectivity(int n,int q) : deletion(q,guide{*this}),uauf(n) {}
   private:
   using uauf::connect,uauf::undo,uauf::get_state,uauf::snapshot,uauf::rollback;
 };
@@ -38,3 +46,5 @@ semionline_dynamic_connectivity(I,I,int,F) -> semionline_dynamic_connectivity<it
 
 template<class F,rngs::range C>
 semionline_dynamic_connectivity(C&&,int,F) -> semionline_dynamic_connectivity<rngs::range_value_t<C>,F>;
+
+#include "graph/offline_dynamic_connectivity.hpp"

@@ -172,7 +172,7 @@ jobs:
       - name: Copy Custom CSS
         run: |
           mkdir -p _jekyll/assets/css
-          cp docs/assets/css/style.scss _jekyll/assets/css/style.scss
+          cp .competitive-verifier/docs/assets/css/style.scss _jekyll/assets/css/style.scss
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

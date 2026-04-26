@@ -10,9 +10,11 @@ body {
 }
 
 section {
+  box-sizing: border-box;
   background-color: #24292e;
   border-radius: 40px;
-  padding: 20px;
+  padding: 30px;
+  margin-bottom: 30px;
 }
 
 h1 {

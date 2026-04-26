@@ -12,7 +12,6 @@ struct undo_able_bipartite_connectivity : public incremental_bipartite_connectiv
     return base::connect(x,y);
   }
   void undo(int i = 1){
-    assert(i<=hs);
     while(i--){
       base::undo(2);
       if (border<(int)base::S.size()) base::flag = false,border = -1;

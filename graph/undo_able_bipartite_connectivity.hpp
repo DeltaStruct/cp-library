@@ -8,13 +8,14 @@ struct undo_able_bipartite_connectivity : public incremental_bipartite_connectiv
   using base::base;
   int border = -1;
   virtual bool connect(int x,int y){
+    bool ret = base::connect(x,y);
     if (base::flag&&border==-1) border = base::S.size();
-    return base::connect(x,y);
+    return ret;
   }
   void undo(int i = 1){
     while(i--){
       base::undo(2);
-      if (border>=(int)base::S.size()) base::flag = false,border = -1;
+      if (border>(int)base::S.size()) base::flag = false,border = -1;
     }
   }
 };

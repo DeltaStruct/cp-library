@@ -2,3 +2,7 @@ description: <small>Example documentation of <a href="https://github.com/deltast
 highlightjs-style: github-dark-dimmed
 filename-index: true
 theme: jekyll-theme-minimal
+markdown: kramdown
+kramdown:
+  syntax_highlighter_opts:
+    disable: true

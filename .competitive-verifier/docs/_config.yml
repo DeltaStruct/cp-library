@@ -1,4 +1,4 @@
 description: <small>Example documentation of <a href="https://github.com/deltastruct/cp-library">deltastruct/cp-library</a></small>
 highlightjs-style: github-dark-dimmed
 filename-index: true
-remote_theme: vaibhavvikas/jekyll-theme-minimal
+theme: jekyll-theme-minimal

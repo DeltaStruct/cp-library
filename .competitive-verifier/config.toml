@@ -1,3 +1,6 @@
+[languages.cpp]
+read_macros = false
+
 [[languages.cpp.environments]]
 CXX = "g++"
 CXXFLAGS = ["-std=gnu++23","-Wall","-Wextra","-O2"]

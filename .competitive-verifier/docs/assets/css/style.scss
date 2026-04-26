@@ -15,7 +15,12 @@ section {
   border-radius: 40px;
   padding: 30px;
   margin-bottom: 30px;
-  transform: translateY(-30px);
+}
+
+@media screen and (min-width: 961px) {
+  section {
+    transform: translateY(-30px);
+  }
 }
 
 h1 {

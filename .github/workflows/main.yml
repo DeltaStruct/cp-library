@@ -169,6 +169,11 @@ jobs:
           path: ${{github.workspace}}/merged-result.json
           key: ${{ runner.os }}-verify-result-${{ github.sha }}
 
+      - name: Copy Custom HTML
+        run: |
+          mkdir -p _jekyll/_includes
+          cp .competitive-verifier/docs/assets/html/head-custom.html _jekyll/_includes/head-custom2.html
+
       - name: Copy Custom CSS
         run: |
           mkdir -p _jekyll/assets/css

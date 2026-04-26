@@ -43,6 +43,10 @@ a {
   color: #79b8ff;
 }
 
-.testcase-table.thead {
+.testcase-table > thead {
+  color: #35414d;
+}
+
+:not(pre) > code {
   color: #295957;
 }

@@ -2,6 +2,10 @@
   import { codeToHtml } from "https://esm.sh/shiki@4.0.2"
   const inline = document.querySelectorAll(":not(pre) > code");
   for (const e in inline){
-    e.innerHTML = await codeToHtml(e.textContent,{ lang: "cpp", theme: "nord" });
+    e.innerHTML = await codeToHtml(e.textContent,{
+      lang: "cpp",
+      theme: "nord",
+      structure: "inline"
+    });
   }
 </script>

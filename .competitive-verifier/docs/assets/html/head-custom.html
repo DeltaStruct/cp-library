@@ -28,7 +28,7 @@
       newheader.innerHTML = table_header;
       newtable.appendChild(newheader);
       const newbody = document.createElement("tbody");
-      for (row of e) newbody.appendChild(row);
+      for (const row of e) newbody.appendChild(row);
       newtable.appendChild(newbody);
       tables.appendChild(newtable);
     }
@@ -68,3 +68,5 @@
     }
   }
 </script>
+$\newcommand{\argmin}{\mathop{\mathrm{arg~min}}\limits}$
+$\newcommand{\order}[1]{\mathrm{O}(#1)}$

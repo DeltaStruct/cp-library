@@ -42,14 +42,14 @@ struct online_range_row_argmin {
             if (f.select(mid,X[i].second,Y[k].second)) r = mid;
             else l = mid;
           }
-          l = (r!=-1&&(i==0||X[i].second!=r));
+          l = (r!=-1&&(i==0||X[i-1].first!=r));
           R.reserve(i+l+(int)Y.size()-k);
           copy(X.begin(),X.begin()+i,back_inserter(R));
           if (l) R.emplace_back(r,X[i].second);
           copy(Y.begin()+k,Y.end(),back_inserter(R));
-          int t = X[i].second;
+          int ret = X[i].second;
           table.pop_back(),table.pop_back();
-          return make_pair(r,t);
+          return make_pair(r,ret);
         }
         if (X[i].first==Y[k].first) ++i,++k;
         else if (X[i].first<Y[k].first) ++i;
@@ -62,20 +62,25 @@ struct online_range_row_argmin {
   }
   int row_argmin(T x,int l,int r){
     assert(l<r);
-    auto solve = [&](auto& rec,int y) -> int {
-      if (y>=w) return y-w;
-      if (segtree[y].first>=x) return min(segtree[y].second,rec(rec,y<<1));
-      return rec(rec,y<<1|1);
-    };
     int ret = l;
     for (l+=w,r+=w;l < r;l>>=1,r>>=1){
       if (l&1){
-        int t = solve(solve,l++);
+        int t = w,y = l++;
+        while(y<w){
+          if (segtree[y].first>=x) t = min(t,segtree[y].second),y<<=1;
+          else y = y<<1|1;
+        }
+        t = min(t,y-w);
         if (ret<t) swap(ret,t);
         if (f.select(x,t,ret)) ret = t;
       }
       if (r&1){
-        int t = solve(solve,--r);
+        int t = w,y = --r;
+        while(y<w){
+          if (segtree[y].first>=x) t = min(t,segtree[y].second),y<<=1;
+          else y = y<<1|1;
+        }
+        t = min(t,y-w);
         if (ret<t) swap(ret,t);
         if (f.select(x,t,ret)) ret = t;
       }

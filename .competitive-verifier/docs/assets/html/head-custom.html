@@ -9,3 +9,62 @@
     });
   }
 </script>
+<script type="module">
+  const original = document.querySelector(".testcases-table");
+  if (original){
+    const rows = Array.from(original.querySelectorAll("tbody > tr"))
+    const n = rows.length/3;
+    const table_header = original.querySelector("thead").innerHTML;
+    const groups = [rows.slice(0,n),rows.slice(n,2*n),rows.slice(2*n)];
+    const tables = document.createElement("div");
+    var sind = 0;
+    for (const e of groups){
+      const newtitle = document.createElement("h3");
+      newtitle.innerText = "Test Option #"+String(sind += 1);
+      tables.appendChild(newtitle);
+      const newtable = document.createElement("table");
+      newtable.className = "testcases-table splited-table";
+      const newheader = document.createElement("thead");
+      newheader.innerHTML = table_header;
+      newtable.appendChild(newheader);
+      const newbody = document.createElement("tbody");
+      for (row of e) newbody.appendChild(row);
+      newtable.appendChild(newbody);
+      tables.appendChild(newtable);
+    }
+    original.style.display = "none";
+    original.parentNode.insertBefore(tables,original.nextSibling);
+    const status_list = ["RE","TLE","MLE","WA","AC"];
+    for (const table of tables.children) if (table.tagName==="TABLE"){
+      console.log(table);
+      const result_worst = document.createElement("tr");
+      result_worst.innerHTML = `
+        <td class=\"col col1\" />
+        <td class=\"col col2\">@RESULT</td>
+        <td class=\"col col3\" />
+        <td class=\"col col4\" />
+        <td class=\"col col5\" />
+      `;
+      var worst_status,worst_order = 5,worst_time = 0,worst_memory = 0;
+      for (const e of table.querySelector("tbody").children){
+        const o = status_list.indexOf(e.querySelector(".col3").innerText.trim())
+        if (o<worst_order){
+          worst_order = o;
+          worst_status = e.querySelector(".col3").innerHTML
+        }
+        const t = parseInt(e.querySelector(".col4").innerText);
+        if (t>worst_time) worst_time = t;
+        const m = parseInt(e.querySelector(".col5").innerText);
+        if (m>worst_memory) worst_memory = m;
+      }
+      result_worst.querySelector(".col3").innerHTML = worst_status;
+      result_worst.querySelector(".col4").innerText = String(worst_time)+" ms"
+      result_worst.querySelector(".col5").innerText = String(worst_memory)+" MB"
+      console.log(worst_status)
+      console.log(worst_time)
+      console.log(worst_memory)
+      console.log(result_worst);
+      table.querySelector("tbody").prepend(result_worst);
+    }
+  }
+</script>

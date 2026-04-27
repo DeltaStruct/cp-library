@@ -8,7 +8,7 @@ int main(){
   vector<long long> A(m); for (auto& a:A) cin >> a;
   vector<pair<long long,long long>> Q(q);
   for (auto& [a,b]:Q) cin >> a >> b;
-  online_range_row_argmin segtree((long long)4e12,m,guide(value)(
+  online_range_row_argmin segtree((long long)(4e12)+1,m,guide(value)(
     [&](long long i,int k){ return A[k]-i*k; }
   ));
   for (auto [a,b]:Q){

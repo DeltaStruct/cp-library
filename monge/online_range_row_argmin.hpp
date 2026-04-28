@@ -20,6 +20,7 @@ struct online_range_row_argmin {
   requires invocable(value,V,T,int)
   online_range_row_argmin(T _h,int _w,V _f,C c) : S(_h,_w,rra_v2s(std::move(_f),std::move(c))) {}
   void build(){
+    if (w==1) return;
     P* pool = new P[w];
     for (int i(0);i < w;++i) pool[i] = make_pair(h-1,i);
     span<P>* tbl = new span<P>[w];

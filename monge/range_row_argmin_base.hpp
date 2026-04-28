@@ -28,7 +28,7 @@ pair<T,int> rra_merge(vector<pair<T,int>>& X,vector<pair<T,int>>& Y,vector<pair<
       }
       l = (r!=-1&&(i==0||X[i-1].first!=r));
       int ret = X[i].second;
-      swap(X,R);
+      R = std::move(X);
       R.resize(i+l+(int)Y.size()-k);
       if (l) R[i].first = r;
       copy(Y.begin()+k,Y.end(),R.data()+i+l);
@@ -38,6 +38,6 @@ pair<T,int> rra_merge(vector<pair<T,int>>& X,vector<pair<T,int>>& Y,vector<pair<
     else if (X[i].first<Y[k].first) ++i;
     else ++k;
   }
-  swap(X,R);
+  R = std::move(X);
   return R.back();
 }

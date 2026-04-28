@@ -18,7 +18,10 @@ struct rra_v2s {
 
 template<typename T,class F>
 pair<T,int> rra_merge(span<pair<T,int>> X,span<pair<T,int>> Y,span<pair<T,int>>& R,F& f){
-  if (X.data()==nullptr||X.data()>Y.data()) return make_pair(nullptr,0);
+  if (X.data()==nullptr||X.data()>Y.data()){
+    R = span<pair<T,int>>{nullptr,0};
+    return make_pair(-1,-1);
+  }
   for (int i(0),k(0);i < (int)X.size();){
     if (!f.select(min(X[i],Y[k]).first,X[i].second,Y[k].second)){
       T l = min(X[i],Y[k]).first,r = max((i==0?-1:X[i-1].first),(k==0?-1:Y[k-1].first));

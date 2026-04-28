@@ -27,11 +27,11 @@ pair<T,int> rra_merge(vector<pair<T,int>>& X,vector<pair<T,int>>& Y,vector<pair<
         else l = mid;
       }
       l = (r!=-1&&(i==0||X[i-1].first!=r));
-      R.reserve(i+l+(int)Y.size()-k);
-      copy(X.begin(),X.begin()+i,back_inserter(R));
-      if (l) R.emplace_back(r,X[i].second);
-      copy(Y.begin()+k,Y.end(),back_inserter(R));
       int ret = X[i].second;
+      R = std::move(X);
+      X.resize(i+l+(int)Y.size()-k);
+      if (l) R[i].first = r;
+      copy(Y.begin()+k,Y.end(),R.data()+i+l);
       return make_pair(r,ret);
     }
     if (X[i].first==Y[k].first) ++i,++k;

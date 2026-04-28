@@ -19,7 +19,7 @@ struct rra_v2s {
 template<typename T,class F>
 pair<T,int> rra_merge(span<pair<T,int>> X,span<pair<T,int>> Y,span<pair<T,int>>& R,F& f){
   if (X.data()==nullptr||X.data()>Y.data()){
-    R = span<pair<T,int>>{nullptr,0};
+    R = span<pair<T,int>>{};
     return make_pair(-1,-1);
   }
   for (int i(0),k(0);i < (int)X.size();){

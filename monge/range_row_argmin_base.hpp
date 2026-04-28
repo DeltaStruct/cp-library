@@ -17,7 +17,8 @@ struct rra_v2s {
 };
 
 template<typename T,class F>
-pair<T,int> rra_merge(vector<pair<T,int>>& X,vector<pair<T,int>>& Y,vector<pair<T,int>>& R,F& f){
+pair<T,int> rra_merge(span<pair<T,int>> X,span<pair<T,int>> Y,span<pair<T,int>>& R,F& f){
+  if (X.data()==nullptr||X.data()>Y.data()) return make_pair(-1,-1);
   for (int i(0),k(0);i < (int)X.size();){
     if (!f.select(min(X[i],Y[k]).first,X[i].second,Y[k].second)){
       T l = min(X[i],Y[k]).first,r = max((i==0?-1:X[i-1].first),(k==0?-1:Y[k-1].first));
@@ -28,8 +29,7 @@ pair<T,int> rra_merge(vector<pair<T,int>>& X,vector<pair<T,int>>& Y,vector<pair<
       }
       l = (r!=-1&&(i==0||X[i-1].first!=r));
       int ret = X[i].second;
-      R = std::move(X);
-      R.resize(i+l+(int)Y.size()-k);
+      R = span{X.data(),Y.size()-k+i+l};
       if (l) R[i].first = r;
       copy(Y.begin()+k,Y.end(),R.data()+i+l);
       return make_pair(r,ret);
@@ -38,6 +38,6 @@ pair<T,int> rra_merge(vector<pair<T,int>>& X,vector<pair<T,int>>& Y,vector<pair<
     else if (X[i].first<Y[k].first) ++i;
     else ++k;
   }
-  R = std::move(X);
+  R = X;
   return R.back();
 }

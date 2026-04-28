@@ -6,10 +6,11 @@ requires invocable_r(bool,select,F,arg_type(0,select,F),int,int)
 struct online_range_row_argmin {
   using T = arg_type(0,select,F);
   using S = online_range_row_argmin;
+  using P = pair<T,int>;
   T h; int w;
-  vector<pair<T,int>> segtree;
+  P* segtree;
   F f;
-  online_range_row_argmin(T _h,int _w,F _f) : h(_h),w(_w),segtree(w),f(std::move(_f)) {
+  online_range_row_argmin(T _h,int _w,F _f) : h(_h),w(_w),segtree(new P[w]),f(std::move(_f)) {
     build();
   }
   template<class V>
@@ -19,12 +20,18 @@ struct online_range_row_argmin {
   requires invocable(value,V,T,int)
   online_range_row_argmin(T _h,int _w,V _f,C c) : S(_h,_w,rra_v2s(std::move(_f),std::move(c))) {}
   void build(){
-    vector<vector<pair<T,int>>> table(2*w);
-    for (int i(0);i < w;++i) table[w+i].emplace_back(h-1,i);
-    for (int t(w-1);t;--t){
-      segtree[t] = rra_merge(table[t<<1],table[t<<1|1],table[t],f);
-      table.pop_back(),table.pop_back();
-    }
+    P* pool = new P[w];
+    for (int i(0);i < w;++i) pool[i] = make_pair(h-1,i);
+    span<P>* tbl = new span<P>[w];
+    for (int i(w+w-2);i >= w-1;i-=2) segtree[i>>1] = rra_merge(
+      (i==w-1?tbl[i]:span{pool+(i-w),1}),
+      span{pool+(i-w+1),1},
+      tbl[i>>1],
+      f
+    );
+    for (int i((w>>1)-1);i;--i) segtree[i] = rra_merge(tbl[i<<1],tbl[i<<1|1],tbl[i],f);
+    delete[] pool;
+    delete[] tbl;
   }
   int row_argmin(T x,int l,int r){
     assert(l<r);

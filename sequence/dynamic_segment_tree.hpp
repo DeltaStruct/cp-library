@@ -2,88 +2,91 @@
 #include "assets/stdc++.hpp"
 
 template<typename T,typename U,class F>
+struct dynamic_segment_tree_node {
+  T v;
+  dynamic_segment_tree_node *lp,*rp;
+  dynamic_segment_tree_node() : v(),lp(nullptr),rp(nullptr) {}
+  dynamic_segment_tree_node(T _v) : v(std::move(_v)),lp(nullptr),rp(nullptr) {}
+  ~dynamic_segment_tree_node(){
+    if (lp!=nullptr) delete lp;
+    if (rp!=nullptr) delete rp;
+  }
+  T ptr_v(dynamic_segment_tree_node* p,U s,F f){
+    if (p!=nullptr) return p->v;
+    if constexpr (invocable_r(T,ids,F,U)) return f.ids(s);
+    return f.id();
+  }
+  T& set(U l,U r,U x,const T& _v,F& f){
+    if (l+1==r) return v = _v;
+    U mid = l+(r-l)/2;
+    if (x<mid){
+      if (lp==nullptr) lp = new dynamic_segment_tree_node();
+      return v = f.merge(lp->set(l,mid,x,_v,f),ptr_v(rp,r-mid,f));
+    } else {
+      if (rp==nullptr) rp = new dynamic_segment_tree_node();
+      return v = f.merge(ptr_v(lp,mid-l,f),rp->set(mid,r,x,_v,f));
+    }
+  }
+  void get(U l,U r,U x,T& res){
+    if (l+1==r){
+      res = v;
+      return;
+    }
+    U mid = l+(r-l)/2;
+    if (x<mid&&lp!=nullptr) lp->get(l,mid,x,res);
+    if (mid<=x&&rp!=nullptr) rp->get(mid,r,x,res);
+  }
+  template<class P>
+  void add(U l,U r,U x,F& f,P& g){
+    if constexpr (invocable_r<T,P,T&,U>) v = g(v,r-l);
+    else v = g(v);
+    if (l+1==r) return;
+    U mid = l+(r-l)/2;
+    if (x<mid){
+      if (lp==nullptr){
+        if constexpr (invocable_r(T,ids,F,U)) lp = new dynamic_segment_tree_node(f.ids(mid-l));
+        else lp = new dynamic_segment_tree_node(f.id());
+      }
+      lp->add(l,mid,x,f,g);
+    } else {
+      if (rp==nullptr){
+        if constexpr (invocable_r(T,ids,F,U)) rp = new dynamic_segment_tree_node(f.ids(r-mid));
+        else rp = new dynamic_segment_tree_node(f.id());
+      }
+      rp->add(mid,r,x,f,g);
+    }
+  }
+  T query(U l,U r,U ll,U rr,F& f){
+    if (ll<=l&&r<=rr) return v;
+    U mid = l+(r-l)/2;
+    if (rr<=mid){
+      if (lp==nullptr){
+        if constexpr (invocable_r(T,ids,F,U)) return f.ids(rr-max(ll,l));
+        return f.id();
+      }
+      return lp->query(l,mid,ll,rr,f);
+    }
+    if (mid<=ll){
+      if (rp==nullptr){
+        if constexpr (invocable_r(T,ids,F,U)) return f.ids(min(rr,r)-ll);
+        return f.id();
+      }
+      return rp->query(mid,r,ll,rr,f);
+    }
+    T ret;
+    if (lp!=nullptr) ret = lp->query(l,mid,ll,rr,f);
+    else if constexpr (invocable_r(T,ids,F,U)) ret = f.ids(mid-max(ll,l));
+    else ret = f.id();
+    if (rp!=nullptr) return f.merge(ret,rp->query(mid,r,ll,rr,f));
+    if constexpr (invocable_r(T,ids,F,U)) return f.merge(ret,f.ids(min(rr,r)-mid));
+    return f.merge(ret,f.id());
+  }
+};
+
+template<typename T,typename U,class F,class Node = dynamic_segment_tree_node<T,U,F>>
 requires invocable_r(T,merge,F,T,T)&&(invocable_r(T,id,F)||invocable_r(T,ids,F,U))
 struct dynamic_segment_tree {
-  struct node {
-    T v;
-    node *lp,*rp;
-    node() : v(),lp(nullptr),rp(nullptr) {}
-    node(T _v) : v(std::move(_v)),lp(nullptr),rp(nullptr) {}
-    ~node(){
-      if (lp!=nullptr) delete lp;
-      if (rp!=nullptr) delete rp;
-    }
-    T ptr_v(node* p,U s,F f){
-      if (p!=nullptr) return p->v;
-      if constexpr (invocable_r(T,ids,F,U)) return f.ids(s);
-      return f.id();
-    }
-    T& set(U l,U r,U x,const T& _v,F& f){
-      if (l+1==r) return v = _v;
-      U mid = l+(r-l)/2;
-      if (x<mid){
-        if (lp==nullptr) lp = new node();
-        return v = f.merge(lp->set(l,mid,x,_v,f),ptr_v(rp,r-mid,f));
-      } else {
-        if (rp==nullptr) rp = new node();
-        return v = f.merge(ptr_v(lp,mid-l,f),rp->set(mid,r,x,_v,f));
-      }
-    }
-    void get(U l,U r,U x,T& res){
-      if (l+1==r){
-        res = v;
-        return;
-      }
-      U mid = l+(r-l)/2;
-      if (x<mid&&lp!=nullptr) lp->get(l,mid,x,res);
-      if (mid<=x&&rp!=nullptr) rp->get(mid,r,x,res);
-    }
-    template<class P>
-    void add(U l,U r,U x,F& f,P& g){
-      if constexpr (invocable_r<T,P,T&,U>) v = g(v,r-l);
-      else v = g(v);
-      if (l+1==r) return;
-      U mid = l+(r-l)/2;
-      if (x<mid){
-        if (lp==nullptr){
-          if constexpr (invocable_r(T,ids,F,U)) lp = new node(f.ids(mid-l));
-          else lp = new node(f.id());
-        }
-        lp->add(l,mid,x,f,g);
-      } else {
-        if (rp==nullptr){
-          if constexpr (invocable_r(T,ids,F,U)) rp = new node(f.ids(r-mid));
-          else rp = new node(f.id());
-        }
-        rp->add(mid,r,x,f,g);
-      }
-    }
-    T query(U l,U r,U ll,U rr,F& f){
-      if (ll<=l&&r<=rr) return v;
-      U mid = l+(r-l)/2;
-      if (rr<=mid){
-        if (lp==nullptr){
-          if constexpr (invocable_r(T,ids,F,U)) return f.ids(rr-max(ll,l));
-          return f.id();
-        }
-        return lp->query(l,mid,ll,rr,f);
-      }
-      if (mid<=ll){
-        if (rp==nullptr){
-          if constexpr (invocable_r(T,ids,F,U)) return f.ids(min(rr,r)-ll);
-          return f.id();
-        }
-        return rp->query(mid,r,ll,rr,f);
-      }
-      T ret;
-      if (lp!=nullptr) ret = lp->query(l,mid,ll,rr,f);
-      else if constexpr (invocable_r(T,ids,F,U)) ret = f.ids(mid-max(ll,l));
-      else ret = f.id();
-      if (rp!=nullptr) return f.merge(ret,rp->query(mid,r,ll,rr,f));
-      if constexpr (invocable_r(T,ids,F,U)) return f.merge(ret,f.ids(min(rr,r)-mid));
-      return f.merge(ret,f.id());
-    }
-  };
+  using node = Node;
   U n;
   node* p;
   F f;

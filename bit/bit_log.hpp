@@ -5,7 +5,7 @@ template<typename T>
 requires is_unsigned_v<T>||is_unsigned_v<make_unsigned_t<T>>
 constexpr int bit_floor_log(const T& v){
   if constexpr (is_unsigned_v<T>) return countr_zero(bit_floor(v));
-  return countr_zero(bit_floor((make_unsigned_t<T>)v));
+  return bit_width((make_unsigned_t<T>)v)-1;
 }
 
 template<typename T>

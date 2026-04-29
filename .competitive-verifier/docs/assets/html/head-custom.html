@@ -49,7 +49,7 @@
         const o = status_list.indexOf(e.children[2].innerText.trim())
         if (o<worst_order){
           worst_order = o;
-          worst_status = e.children[q].innerHTML
+          worst_status = e.children[2].innerHTML
         }
         const t = parseInt(e.children[3].innerText);
         if (t>worst_time) worst_time = t;

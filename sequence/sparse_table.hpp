@@ -1,6 +1,5 @@
 #pragma once
 #include "bit/bit_log.hpp"
-#include <iterator>
 
 template<typename T,class F>
 requires invocable_r(T,merge,F,T&,T&)

@@ -1,4 +1,4 @@
-// competitive-verifer: PROBLEM https://judge.yosupo.jp/problem/point_set_range_composite_large_array
+// competitive-verifier: PROBLEM https://judge.yosupo.jp/problem/point_set_range_composite_large_array
 #include "assets/stdc++.hpp"
 #include "sequence/dynamic_segment_tree.hpp"
 

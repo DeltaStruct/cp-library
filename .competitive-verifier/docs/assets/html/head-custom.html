@@ -36,7 +36,6 @@
     original.parentNode.insertBefore(tables,original.nextSibling);
     const status_list = ["RE","TLE","MLE","WA","AC"];
     for (const table of tables.children) if (table.tagName==="TABLE"){
-      console.log(table);
       const result_worst = document.createElement("tr");
       result_worst.innerHTML = `
         <td class=\"col col1\" />
@@ -47,23 +46,19 @@
       `;
       var worst_status,worst_order = 5,worst_time = 0,worst_memory = 0;
       for (const e of table.querySelector("tbody").children){
-        const o = status_list.indexOf(e.querySelector(".col3").innerText.trim())
+        const o = status_list.indexOf(e.children[2].innerText.trim())
         if (o<worst_order){
           worst_order = o;
-          worst_status = e.querySelector(".col3").innerHTML
+          worst_status = e.children[q].innerHTML
         }
-        const t = parseInt(e.querySelector(".col4").innerText);
+        const t = parseInt(e.children[3].innerText);
         if (t>worst_time) worst_time = t;
-        const m = parseInt(e.querySelector(".col5").innerText);
+        const m = parseInt(e.children[4].innerText);
         if (m>worst_memory) worst_memory = m;
       }
       result_worst.querySelector(".col3").innerHTML = worst_status;
-      result_worst.querySelector(".col4").innerText = String(worst_time)+" ms"
-      result_worst.querySelector(".col5").innerText = String(worst_memory)+" MB"
-      console.log(worst_status)
-      console.log(worst_time)
-      console.log(worst_memory)
-      console.log(result_worst);
+      result_worst.querySelector(".col4").innerText = String(worst_time)+" ms";
+      result_worst.querySelector(".col5").innerText = String(worst_memory)+" MB";
       table.querySelector("tbody").prepend(result_worst);
     }
   }

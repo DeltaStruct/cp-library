@@ -1,6 +1,6 @@
 // competitive-verifier: PROBLEM https://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=3086
 #include "assets/stdc++.hpp"
-#include "sequence/segment_tree.hpp"
+#include "sequence/sparse_table.hpp"
 #include "monge/simple_larsch.hpp"
 #define int long long
 
@@ -8,8 +8,7 @@ signed main(){
   ios::sync_with_stdio(false),cin.tie(0);
   int n,m; cin >> n >> m;
   vector<int> A(n); for (int& a:A) cin >> a;
-  segment_tree segtree(A,guide(id,merge)(
-    single((int)-1e18),
+  sparse_table segtree(A,guide(merge)(
     [](int a,int b){ return max(a,b); }
   ));
   vector R = simple_larsch(n,guide(value,select,id,init)(

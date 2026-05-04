@@ -2,8 +2,9 @@
 #include "assets/stdc++.hpp"
 
 struct fast_union_find {
-  vector<int> par,sz;
-  fast_union_find(int n = 0) : par(n,-1),sz(n,1) {}
+  int n;
+  int *par,*sz;
+  fast_union_find(int _n) : n(_n),par(new int[n](-1)),sz(new int[n](1)) {}
   int leader_compress(int x){
     int ret = x;
     while(par[ret]!=-1) ret = par[ret];
@@ -25,7 +26,7 @@ struct fast_union_find {
     return true;
   }
   int size(){
-    return (int)par.size();
+    return n;
   }
   int size(int x){
     return sz[leader(x)];

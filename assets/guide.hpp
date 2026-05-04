@@ -10,4 +10,4 @@
 #define grp7(x,...) tuple_element_t<7,GuT> x; __VA_OPT__(grp8(__VA_ARGS__))
 #define grp8(x,...) tuple_element_t<8,GuT> x; __VA_OPT__(grp9(__VA_ARGS__))
 
-#define guide(...) [](auto&&... args){ using GuT = tuple<remove_cvref_t<decltype(args)>...>; struct guide { grp0(__VA_ARGS__) }; return guide{std::forward<decltype(args)>(args)...}; }
+#define guide(...) [](auto&&... args){ using GuT = tuple<remove_cvref_t<decltype(args)>...>; struct guide { __VA_OPT__(grp0(__VA_ARGS__)) static constexpr bool tag_raised(no_template_tag x){ if constexpr (requires { decltype(tag)::raised(x.val); }) return decltype(tag)::raised(x.val); return 0; } }; return guide{std::forward<decltype(args)>(args)...}; }

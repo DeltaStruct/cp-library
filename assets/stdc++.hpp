@@ -124,6 +124,9 @@ constexpr bool false_v = false;
 
 #define function_alias(name,call) static constexpr struct { template<class... Args> auto operator()(Args&&... args) const -> decltype(call(std::forward<Args>(args)...)) { return call(std::forward<Args>(args)...); } } inline name [[maybe_unused]]
 
+struct inheritance_empty {};
+#define if_inheritance(expr,...) conditional_t<(expr),__VA_ARGS__,inheritance_empty>;
+
 template<typename T>
 T input(){
   T ret; cin >> ret;

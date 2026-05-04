@@ -7,8 +7,7 @@ int main(){
   int n,q; cin >> n >> q;
   vector<pair<long long,long long>> A(n); for (auto& [a,b]:A) cin >> a >> b;
   constexpr long long mod = 998244353;
-  segment_tree segtree(A,guide(id,merge)(
-    single(make_pair(1ll,0ll)),
+  segment_tree segtree(A,guide(merge)(
     [&](pair<long long,long long>& x,pair<long long,long long>& y){
       return make_pair(x.first*y.first%mod,(x.second*y.first+y.second)%mod);
     }

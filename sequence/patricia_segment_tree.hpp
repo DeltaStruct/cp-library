@@ -16,7 +16,6 @@ struct patricia_segment_tree_node {
     if (lp!=nullptr) delete lp;
     if (rp!=nullptr) delete rp;
   }
-  void 
   T ptr_v(patricia_segment_tree_node* p,U s,F f){
     if (p!=nullptr) return p->v;
     if constexpr (invocable_r(T,ids,F,U)) return f.ids(s);

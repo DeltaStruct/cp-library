@@ -1,26 +1,38 @@
 #pragma once
 #include "assets/stdc++.hpp"
 
-template<typename T,class F>
-requires invocable_r(T,merge,F,T&,T&)
-struct segment_tree {
+template<typename T,typename U,class F>
+concept lazy_segtree_c = invocable_r(T,transform,F,T&,U&)&&invocable_r(U,composition,F,U&,U&);
+
+template<typename T,typename U,class F>
+requires invocable_r(T,merge,F,T&,T&)&&lazy_segtree_c<T,U,F>
+struct lazy_segment_tree;
+
+template<typename T,typename U,class F>
+requires 
+
+template<typename T,typename U,class F>
+struct lazy_segment_tree {
   int n;
   T* segtree;
+  U* lazy;
   F f;
-  segment_tree(int _n,F _f) : n(_n),segtree(new T[2*n]),f(std::move(_f)) {
+  lazy_segment_tree(int _n,F _f) : n(_n),segtree(new T[2*n]),
+                                   lazy(new U[2*n]),lable(new unsigned long long[(2*n+63)>>6]),
+                                   f(std::move(_f)) {
     for (int i(0);i < n;++i){
-      if constexpr (invocable_r(T,idi,F,int)) segtree[n+i] = f.idi(i);
+      if constexpr (invocable_r(T,idi,F,i32)) segtree[n+i] = f.idi(i);
       else segtree[n+i] = f.id();
     }
     build();
   }
   template<input_iterator I>
-  segment_tree(I a,I b,F _f) : n((int)distance(a,b)),segtree(new T[2*n]),f(std::move(_f)) {
+  lazy_segment_tree(I a,I b,F _f) : n((int)distance(a,b)),segtree(new T[2*n]),f(std::move(_f)) {
     copy(a,b,segtree+n);
     build();
   }
   template<rngs::range C>
-  segment_tree(C&& A,F _f) : n((int)rngs::distance(A)),segtree(new T[2*n]),f(std::move(_f)) {
+  lazy_segment_tree(C&& A,F _f) : n((int)rngs::distance(A)),segtree(new T[2*n]),f(std::move(_f)) {
     rngs::copy(A,segtree+n);
     build();
   }

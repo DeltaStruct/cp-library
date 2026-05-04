@@ -1,11 +1,12 @@
+// competitive-verifier: PROBLEM https://judge.yosupo.jp/problem/dynamic_sequence_range_affine_range_sum
 #include "assets/stdc++.hpp"
-#include "bbst/rbst.hpp"
+#include "bbst/splay_tree.hpp"
 #define int long long
 
 signed main(){
   ios::sync_with_stdio(false),cin.tie(0);
   int mod = 998244353;
-  lazy_rbst tree(guide(merge,push,apply,lazy_id)(
+  splay_tree tree(guide(merge,composition,transform,tag)(
     [&](pair<int,int> a,pair<int,int> b){
       return make_pair((a.first+b.first)%mod,a.second+b.second);
     },
@@ -15,38 +16,36 @@ signed main(){
     [&](pair<int,int> a,pair<int,int> b){
       return make_pair((a.first*b.first+a.second*b.second)%mod,a.second);
     },
-    single(make_pair(1,0))
+    bbst_reversible_tag|bbst_lazy_tag|bbst_size_tag
   ));
-  auto root = tree.dummy();
+  auto root = tree.make_dummy();
   int n,q; cin >> n >> q;
-  vector<int> A(n); for (int& a:A) (cin>>a),root = tree.merge(root,tree.create(make_pair(a,1)));
+  vector<int> A(n); for (int& a:A) (cin>>a),root = tree.emplace_back(root,a,1);
   while(q--){
     int t; cin >> t;
     if (t==0){
       int x,y; cin >> x >> y;
-      auto [a,b] = tree.front(root,x);
-      root = tree.merge(a,tree.create(make_pair(y,1)),b);
+      root = tree.emplace_at(root,x,y,1);
     }
     if (t==1){
       int x; cin >> x;
-      auto [a,b,c] = tree.range(root,x,x+1);
-      root = tree.merge(a,c);
+      root = tree.erase_at(root,x);
     }
     if (t==2){
       int l,r; cin >> l >> r;
-      auto [a,b,c] = tree.range(root,l,r);
+      auto [a,b,c] = tree.between(root,l,r);
       tree.reverse(b);
       root = tree.merge(a,b,c);
     }
     if (t==3){
       int l,r,x,y; cin >> l >> r >> x >> y;
-      auto [a,b,c] = tree.range(root,l,r);
-      tree.update(b,make_pair(x,y));
+      auto [a,b,c] = tree.between(root,l,r);
+      tree.lazy_update(b,make_pair(x,y));
       root = tree.merge(a,b,c);
     }
     if (t==4){
       int l,r; cin >> l >> r;
-      auto [a,b,c] = tree.range(root,l,r);
+      auto [a,b,c] = tree.between(root,l,r);
       cout << tree.sum(b).first << '\n';
       root = tree.merge(a,b,c);
     }

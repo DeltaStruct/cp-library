@@ -1,3 +1,4 @@
+#pragma once
 #include "assets/stdc++.hpp"
 
 template<typename T>
@@ -26,15 +27,15 @@ struct edge<void> {
 template<typename T>
 struct edge : public edge<void> {
   using type = T;
-  using super = edge<void>;
+  using base = edge<void>;
   T weight;
-  edge(int f,int t,T w) : super(f,t),weight(move(w)) {}
+  edge(int f,int t,T w) : base(f,t),weight(move(w)) {}
   bool operator==(edge x){
-    return (super::operator==(x)&&weight==x.weight);
+    return (base::operator==(x)&&weight==x.weight);
   }
   auto operator<=>(edge x){
     if (to==x.to) return weight<=>x.weight;
-    return super::operator<=>(x);
+    return base::operator<=>(x);
   }
 };
 

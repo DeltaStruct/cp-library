@@ -8,6 +8,7 @@ int main(){
     [](long long a,long long b){ return a+b; },
     bbst_sum_tag|bbst_reversible_tag|bbst_size_tag
   ));
+  auto root = tree.make_dummy();
   int n,q; cin >> n >> q;
   vector<long long> A(n); for (auto& a:A) (cin>>a),tree.emplace_back(root,a);
   while(q--){

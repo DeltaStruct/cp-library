@@ -11,7 +11,7 @@ struct segment_tree {
   segment_tree(int _n,F _f) : n(_n),segtree(2*n),f(std::move(_f)) {
     if constexpr (invocable_r(T,idi,F,int)){
       for (int i(0);i < n;++i) segtree.init(i,f.idi(i));
-      build()
+      build();
     } else if constexpr (invocable_r(T,id,F)) segtree.init_all(f.id()),build();
     else if constexpr (is_default_constructible_v<T>) build();
   }

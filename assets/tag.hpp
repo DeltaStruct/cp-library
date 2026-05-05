@@ -1,5 +1,4 @@
 #pragma once
-#include "assets/stdc++.hpp"
 
 template<unsigned long long Tag>
 struct tag_base {

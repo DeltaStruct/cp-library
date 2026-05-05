@@ -1,13 +1,14 @@
 #pragma once
 #include "assets/stdc++.hpp"
+#include "sequence/runtime_array.hpp"
 
 template<typename T,class F>
 requires invocable_r(T,merge,F,T&,T&)
 struct segment_tree {
   int n;
-  T* segtree;
+  runtime_array<T> segtree;
   F f;
-  segment_tree(int _n,F _f) : n(_n),segtree(new T[2*n]),f(std::move(_f)) {
+  segment_tree(int _n,F _f) : n(_n),segtree(2*n),f(std::move(_f)) {
     for (int i(0);i < n;++i){
       if constexpr (invocable_r(T,idi,F,int)) segtree[n+i] = f.idi(i);
       else segtree[n+i] = f.id();
@@ -15,13 +16,13 @@ struct segment_tree {
     build();
   }
   template<input_iterator I>
-  segment_tree(I a,I b,F _f) : n((int)distance(a,b)),segtree(new T[2*n]),f(std::move(_f)) {
-    copy(a,b,segtree+n);
+  segment_tree(I a,I b,F _f) : n((int)distance(a,b)),segtree(2*n),f(std::move(_f)) {
+    copy(a,b,segtree.begin()+n);
     build();
   }
   template<rngs::range C>
-  segment_tree(C&& A,F _f) : n((int)rngs::distance(A)),segtree(new T[2*n]),f(std::move(_f)) {
-    rngs::copy(A,segtree+n);
+  segment_tree(C&& A,F _f) : n((int)rngs::distance(A)),segtree(2*n),f(std::move(_f)) {
+    rngs::copy(A,segtree.begin()+n);
     build();
   }
   void build(){

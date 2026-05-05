@@ -1,5 +1,6 @@
 #pragma once
 #include "assets/stdc++.hpp"
+#include "sequence/runtime_array.hpp"
 
 template<class F>
 requires invocable(add,F,arg_type(0,add,F))&&invocable(undo,F)
@@ -7,7 +8,7 @@ struct semionline_deletion {
   using T = arg_type(0,add,F);
   int n,now;
   bool bck;
-  vector<vector<T>> segtree;
+  runtime_array<vector<T>> segtree;
   F f;
   semionline_deletion(int _n,F _f) : n(_n),now(-1),bck(false),segtree(2*n),f(std::move(_f)) {
     reset();

@@ -1,5 +1,6 @@
 #pragma once
 #include "monge/range_row_argmin_base.hpp"
+#include "sequence/runtime_array.hpp"
 
 template<class F>
 requires invocable_r(bool,select,F,arg_type(0,select,F),int,int)
@@ -7,7 +8,7 @@ struct semionline_range_row_argmin {
   using T = arg_type(0,select,F);
   using S = semionline_range_row_argmin;
   T h; int w;
-  vector<pair<T,int>> segtree;
+  runtime_array<pair<T,int>> segtree;
   F f;
   semionline_range_row_argmin(T _h,int _w,F _f) : h(_h),w(_w),segtree(w),f(std::move(_f)) {
     build();

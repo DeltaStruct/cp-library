@@ -10,6 +10,9 @@ struct mo {
     static int i = 0;
     Q[i++] = make_pair(l,r);
   }
+  void resize(int s){
+    Q.resize(s),O.resize(s);
+  }
   long long cost(vector<int>& A){
     long long ret = 0;
     int x = 0,y = 0;

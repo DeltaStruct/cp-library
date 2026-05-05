@@ -1,16 +1,12 @@
 #pragma once
 #include "assets/stdc++.hpp"
+#include "sequence/runtime_array.hpp"
 
 struct fast_union_find {
   int n;
-  int *par,*sz;
-  fast_union_find(int _n) : n(_n),par(new int[n]),sz(new int[n]) {
-    fill(par,par+n,-1),fill(sz,sz+n,1);
-  }
-  ~fast_union_find(){
-    delete[] par;
-    delete[] sz;
-  }
+  runtime_array<int> par,sz;
+  fast_union_find(int _n) : n(_n),par(n,-1),sz(n,1) {}
+  ~fast_union_find(){}
   int leader_compress(int x){
     int ret = x;
     while(par[ret]!=-1) ret = par[ret];
@@ -49,8 +45,8 @@ struct union_find;
 template<>
 struct union_find<void,void> : public fast_union_find {
   using base = fast_union_find;
-  int *lst;
-  union_find(int _n = 0) : base(_n),lst(new int[_n]) { iota(lst,lst+_n,0); }
+  runtime_array<int> lst;
+  union_find(int _n = 0) : base(_n),lst(_n) { iota(lst.begin(),lst.end(),0); }
   bool connect(int x,int y){
     x = leader(x),y = leader(y);
     if (base::connect(x,y)){
@@ -74,9 +70,9 @@ template<typename T,class F>
 requires union_find_c<T,F>
 struct union_find : public union_find<void,void> {
   using base = union_find<void,void>;
-  T *val;
+  runtime_array<T> val;
   F f;
-  union_find(int _n,F _f) : base(_n),val(new T[_n]),f(std::move(_f)) {
+  union_find(int _n,F _f) : base(_n),val(_n),f(std::move(_f)) {
     if constexpr (invocable_r(T,idi,F,int)) for (int i(0);i < _n;++i) val[i] = f.idi(i);
     else if constexpr (invocable_r(T,id,F)) fill(val,val+_n,f.id());
   }

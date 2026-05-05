@@ -62,6 +62,9 @@ struct runtime_array {
   operator vector<T>(){
     return vector<T>(ptr,ptr+sz);
   }
+  operator vector<T>() const {
+    return vector<T>(ptr,ptr+sz);
+  }
   T& operator[](int x){
     return ptr[x];
   }

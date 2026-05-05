@@ -1,12 +1,11 @@
 #pragma once
 #include "assets/stdc++.hpp"
-#include "sequence/runtime_array.hpp"
 
 template<typename T>
 struct larsch_ret_t {
-  runtime_array<T> dist;
-  runtime_array<int> prev;
-  runtime_array<int> count;
+  vector<T> dist;
+  vector<int> prev;
+  vector<int> count;
 };
 
 template<class F>
@@ -14,10 +13,10 @@ requires invocable(value,F,int,return_type(value,F)&,int)
        &&invocable_r(bool,select,F,int,return_type(value,F)&,int,return_type(value,F)&,int)
 larsch_ret_t<return_type(value,F)> simple_larsch(int n,F f){
   using T = return_type(value,F);
-  runtime_array<T> R(n+1);
+  vector<T> R(n+1);
   if constexpr (invocable_r(T,init,F)) fill(R.begin(),R.end(),f.init());
   if constexpr (invocable_r(T,id,F)) R[0] = f.id();
-  runtime_array<int> P(n+1);
+  vector<int> P(n+1);
   auto update = [&](int x,int y) -> void {
     if (!f.select(x,R[x],P[x],R[y],y)) R[x] = f.value(x,R[y],y),P[x] = y;
   };
@@ -41,7 +40,7 @@ larsch_ret_t<return_type(value,F)> simple_larsch(int n,F f){
       for (int i(P[l]);i <= P[r];++i) update(mid,i);
     }
   }
-  runtime_array<int> D(n+1);
+  vector<int> D(n+1);
   for (int i(1);i <= n;++i) D[i] = D[P[i]]+1;
   return larsch_ret_t<T>{std::move(R),std::move(P),std::move(D)};
 }

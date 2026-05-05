@@ -17,12 +17,12 @@ struct sparse_table {
   }
   template<input_iterator I>
   sparse_table(I a,I b,F _f) : sparse_table((int)distance(a,b),std::move(_f)) {
-    copy(a,b,table[0]);
+    copy(a,b,table[0].begin());
     build();
   }
   template<rngs::range C>
   sparse_table(C&& A,F _f) : sparse_table((int)rngs::distance(A),std::move(_f)) {
-    rngs::copy(A,table[0]);
+    rngs::copy(A,table[0].begin());
     build();
   }
   void build(){

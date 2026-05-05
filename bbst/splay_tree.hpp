@@ -103,7 +103,10 @@ struct splay_tree_sum_node_base<T,F,D,true> : splay_tree_vupd_node_base<T,F,D> {
 
 template<typename T,typename U,class F,class D,bool Use = F::tag_raised(bbst_lazy_tag)>
 requires (!Use||(invocable_r(T,transform,F,T&,U&)&&invocable_r(U,composition,F,U&,U&)))
-struct splay_tree_lazy_node_base : splay_tree_sum_node_base<T,F,D> {};
+struct splay_tree_lazy_node_base : splay_tree_sum_node_base<T,F,D> {
+  using base = splay_tree_sum_node_base<T,F,D>;
+  using base::base;
+};
 
 template<typename T,typename U,class F,class D>
 requires invocable_r(U,lid,F)

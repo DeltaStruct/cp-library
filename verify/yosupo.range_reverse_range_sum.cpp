@@ -10,10 +10,10 @@ int main(){
   ));
   auto root = tree.make_dummy();
   int n,q; cin >> n >> q;
-  vector<long long> A(n); for (auto& a:A) (cin>>a),tree.emplace_back(root,a);
+  vector<long long> A(n); for (auto& a:A) (cin>>a),root = tree.emplace_back(root,a);
   while(q--){
     int t,l,r; cin >> t >> l >> r;
-    auto [a,b,c] = tree.between(l,r);
+    auto [a,b,c] = tree.between(root,l,r);
     if (t==0) tree.reverse(b);
     else cout << tree.sum(b) << '\n';
     root = tree.merge(a,b,c);

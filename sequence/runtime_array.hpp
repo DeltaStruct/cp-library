@@ -1,37 +1,57 @@
 #pragma once
 #include "assets/stdc++.hpp"
+#include <memory>
+#include <type_traits>
 
 template<typename T>
 struct runtime_array {
   int sz;
   T* ptr;
-  runtime_array() : sz(0),ptr(nullptr) {}
-  runtime_array(int n) : sz(n),ptr(new T[n]) {}
-  runtime_array(int n,T x) : sz(n),ptr(new T[n](x)) {}
-  template<input_iterator I>
-  runtime_array(I first,I last) : sz((int)distance(first,last)),ptr(new T[sz]) {
-    copy(first,last,ptr);
+  T* uinit_alloc(){
+    return (T*)(::operator new(sizeof(T)*sz));
   }
-  runtime_array(const runtime_array<T>& A) : sz(A.sz),ptr(new T[A.sz]) {
-    copy(A.ptr,A.ptr+sz,ptr);
+  runtime_array() : sz(0),ptr(nullptr) {}
+  runtime_array(int n) : sz(n),ptr(uinit_alloc()) {
+    if constexpr (is_default_constructible_v<T>) uninitialized_default_construct_n(ptr,sz);
+  }
+  runtime_array(int n,T x) : sz(n),ptr(uinit_alloc()) {
+    uninitialized_fill_n(ptr,sz,x);
+  }
+  template<input_iterator I>
+  runtime_array(I first,I last) : sz((int)distance(first,last)),ptr(uinit_alloc()) {
+    uninitialized_copy(first,last,ptr);
+  }
+  runtime_array(const runtime_array<T>& A) : sz(A.sz),ptr(uinit_alloc()) {
+    uninitialized_copy_n(A.ptr,sz,ptr);
   }
   runtime_array(runtime_array<T>&& A) : sz(A.sz),ptr(A.ptr) {
     A.ptr = nullptr,A.sz = 0;
   }
-  runtime_array(initializer_list<T> A) : sz(A.size()),ptr(new T[A.size()]) {
-    copy(A.begin(),A.end(),ptr);
+  runtime_array(initializer_list<T> A) : sz(A.size()),ptr(uinit_alloc()) {
+    uninitialized_copy(A.begin(),A.end(),ptr);
   }
   template<rngs::range C>
-  runtime_array(C&& A) : sz((int)rngs::distance(A)),ptr(new T[sz]) {
-    rngs::copy(A,ptr);
+  runtime_array(C&& A) : sz((int)rngs::distance(A)),ptr(uinit_alloc()) {
+    uninitialized_copy(rngs::begin(A),rngs::end(A),ptr);
   }
   ~runtime_array(){
     clear();
   }
+  T& init(int i,T x){
+    if constexpr (is_default_constructible_v<T>) return ptr[i] = x;
+    return *construct_at(ptr+i,std::move(x));
+  }
+  void init_all(T x){
+    if constexpr (is_default_constructible_v<T>) fill_n(ptr,sz,x);
+    else uninitialized_fill_n(ptr,sz,x);
+  }
+  void init_all(){
+    if constexpr (!is_default_constructible_v<T>) uninitialized_default_construct_n(ptr,sz);
+  }
   runtime_array& operator=(const runtime_array& A){
     clear();
-    sz = A.size(),ptr = new T[sz];
-    copy(A.begin(),A.end(),ptr);
+    sz = A.size(),ptr = uinit_alloc();
+    uninitialized_copy(A.begin(),A.end(),ptr);
     return *this;
   }
   runtime_array& operator=(runtime_array&& A){
@@ -79,7 +99,8 @@ struct runtime_array {
   }
   void clear(){
     if (ptr!=nullptr){
-      delete[] ptr;
+      destroy_n(ptr,sz);
+      ::operator delete(ptr);
       ptr = nullptr,sz = 0;
     }
   }

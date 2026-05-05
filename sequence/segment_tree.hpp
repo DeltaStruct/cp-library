@@ -9,10 +9,9 @@ struct segment_tree {
   runtime_array<T> segtree;
   F f;
   segment_tree(int _n,F _f) : n(_n),segtree(2*n),f(std::move(_f)) {
-    for (int i(0);i < n;++i){
-      if constexpr (invocable_r(T,idi,F,int)) segtree[n+i] = f.idi(i);
-      else segtree[n+i] = f.id();
-    }
+    if constexpr (invocable_r(T,idi,F,int)) for (int i(0);i < n;++i) segtree.init(i,f.idi(i));
+    else if constexpr (invocable_r(T,id,F)) segtree.init_all(f.id());
+    else if constexpr (!is_default_constructible_v<T>) return *this;
     build();
   }
   template<input_iterator I>

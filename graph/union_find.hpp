@@ -73,19 +73,13 @@ struct union_find : public union_find<void,void> {
   runtime_array<T> val;
   F f;
   union_find(int _n,F _f) : base(_n),val(_n),f(std::move(_f)) {
-    if constexpr (invocable_r(T,idi,F,int)) for (int i(0);i < _n;++i) val[i] = f.idi(i);
-    else if constexpr (invocable_r(T,id,F)) fill(val,val+_n,f.id());
+    if constexpr (invocable_r(T,idi,F,int)) for (int i(0);i < _n;++i) val.init(i,f.idi(i));
+    else if constexpr (invocable_r(T,id,F)) val.init_all(f.id());
   }
   template<input_iterator I>
-  union_find(I a,I b,F _f) : base::union_find((int)distance(a,b)),val(),f(std::move(_f)) {
-    val = new T[base::n];
-    copy(a,b,val);
-  }
+  union_find(I a,I b,F _f) : base::union_find((int)distance(a,b)),val(a,b),f(std::move(_f)) {}
   template<rngs::range C>
-  union_find(C&& A,F _f) : base::union_find((int)rngs::distance(A)),val(),f(std::move(_f)) {
-    val = new T[base::n];
-    rngs::copy(A,val);
-  }
+  union_find(C&& A,F _f) : base::union_find((int)rngs::distance(A)),val(A),f(std::move(_f)) {}
   bool connect(int x,int y){
     x = leader(x),y = leader(y);
     if (base::connect(x,y)){

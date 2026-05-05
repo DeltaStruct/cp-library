@@ -6,7 +6,7 @@
 signed main(){
   ios::sync_with_stdio(false),cin.tie(0);
   int mod = 998244353;
-  splay_tree tree(guide(merge,composition,transform,tag)(
+  splay_tree tree(guide(merge,composition,transform,lid,skip_lazy_update,tag)(
     [&](pair<int,int> a,pair<int,int> b){
       return make_pair((a.first+b.first)%mod,a.second+b.second);
     },
@@ -15,6 +15,10 @@ signed main(){
     },
     [&](pair<int,int> a,pair<int,int> b){
       return make_pair((a.first*b.first+a.second*b.second)%mod,a.second);
+    },
+    single(make_pair(1ll,0ll)),
+    [](pair<int,int> a){
+      return a==make_pair(1ll,0ll);
     },
     bbst_reversible_tag|bbst_lazy_tag|bbst_size_tag
   ));

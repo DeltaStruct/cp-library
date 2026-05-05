@@ -51,8 +51,8 @@ struct splay_tree_vupd_node_base<T,F,D,true> : splay_tree_value_node_base<T,F,D>
     if constexpr (invocable_r(bool,skip_value_update,F,T&)){
       if (base::f.skip_value_update(vu)) return base::push();
     }
-    if (base::lp!=nullptr) base::lp->d = base::f.value_composition(base::lp->d,vu);
-    if (base::rp!=nullptr) base::rp->d = base::f.value_composition(base::rp->d,vu);
+    if (base::lp!=nullptr) base::lp->value_update(vu);
+    if (base::rp!=nullptr) base::rp->value_update(vu);
     vu = base::f.did();
     base::push();
   }
@@ -120,11 +120,11 @@ struct splay_tree_lazy_node_base<T,U,F,D,true> : splay_tree_sum_node_base<T,F,D>
     lazy = base::f.composition(lazy,u);
   }
   void push(){
-    if constexpr (invocable_r(bool,skip_lazy,F,U&)){
-      if (base::f.skip_lazy(lazy)) return base::push();
+    if constexpr (invocable_r(bool,skip_lazy_update,F,U&)){
+      if (base::f.skip_lazy_update(lazy)) return base::push();
     }
-    if (base::lp!=nullptr) base::lp->lazy = base::f.composition(base::lp->lazy,lazy);
-    if (base::rp!=nullptr) base::rp->lazy = base::f.composition(base::rp->lazy,lazy);
+    if (base::lp!=nullptr) base::lp->lazy_update(lazy);
+    if (base::rp!=nullptr) base::rp->lazy_update(lazy);
     lazy = base::f.lid();
     base::push();
   }
@@ -281,6 +281,22 @@ struct splay_tree<void,void,F,Node> {
     while(!is_root(p)){
       node x = p->pp;
       if (is_root(x)){
+        //x->push(),p->push();
+        rot(p);
+      } else {
+        node y = x->pp;
+        //y->push(),x->push(),p->push();
+        rot((pos(x)==pos(p)?x:p)),rot(p);
+      }
+    }
+    return p;
+  }
+  node safe_splay(node p){
+    if (p==nullptr) return nullptr;
+    p->push();
+    while(!is_root(p)){
+      node x = p->pp;
+      if (is_root(x)){
         x->push(),p->push();
         rot(p);
       } else {
@@ -297,9 +313,12 @@ struct splay_tree<void,void,F,Node> {
   [[nodiscard]] node splay_at(node p,int x){
     assert(p!=nullptr&&x<size(p));
     p->push();
-    if (x==size(p->lp)) return splay(p);
-    if (x<size(p->lp)) return splay_at(p->lp,x);
-    else return splay_at(p->rp,x-size(p->lp)-1);
+    while(x!=size(p->lp)){
+      if (x<size(p->lp)) p = p->lp;
+      else x -= size(p->lp)+1,p = p->rp;
+      p->push();
+    }
+    return splay(p);
   }
   [[nodiscard]] node kth(node p,int x){
     return splay_at(p,x);
@@ -445,11 +464,14 @@ struct splay_tree<T,void,F,Node> : splay_tree<void,void,F,Node> {
   requires (invocable_r<bool,P,T&>&&F::tag_raised(bbst_value_tag))
   [[nodiscard]] node splay_value(node p,P&& cond){
     if (p==nullptr) return nullptr;
-    p->push();
-    if (cond(p->v)) return splay_value(p->rp,cond);
-    node ret = splay_value(p->lp,cond);
-    if (ret==nullptr) return splay(p);
-    return ret;
+    node ret = nullptr,prv = nullptr;
+    while(p!=nullptr){
+      p->push();
+      if (cond(p->v)) prv = p,p = p->rp;
+      else prv = ret = p,p = p->lp;
+    }
+    splay(prv);
+    return (ret==nullptr?nullptr:splay(ret));
   }
   [[nodiscard]] node lower_bound(node p,T v) requires (F::tag_raised(bbst_value_tag)) {
     if constexpr (invocable_r(bool,comp,F,T&,T&)){

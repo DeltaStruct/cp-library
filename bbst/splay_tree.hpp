@@ -287,7 +287,7 @@ struct splay_tree<void,void,F,Node> {
         //x->push(),p->push();
         rot(p);
       } else {
-        node y = x->pp;
+        //node y = x->pp;
         //y->push(),x->push(),p->push();
         rot((pos(x)==pos(p)?x:p)),rot(p);
       }
@@ -411,7 +411,7 @@ struct splay_tree<void,void,F,Node> {
     return make_tuple(a,b,d);
   }
   void reverse(node p) requires (F::tag_raised(bbst_reversible_tag)) {
-    p->reverse();
+    if (p!=nullptr) p->reverse();
   }
   [[nodiscard]] node insert_front(node p,node x){
     return insert_at(p,0,x);
@@ -452,16 +452,22 @@ struct splay_tree<T,void,F,Node> : splay_tree<void,void,F,Node> {
   using node = Node*;
   using base = splay_tree<void,void,F,Node>;
   using base::base;
-  T& value(node p) requires (F::tag_raised(bbst_value_tag)) {
+  T value(node p) requires (F::tag_raised(bbst_value_tag)) {
+    if constexpr (invocable_r(T,id,F)) if (p==nullptr) return base::f.id();
     p->push();
     return p->v;
   }
-  const T& sum(node p) requires (F::tag_raised(bbst_sum_tag)) {
+  T& reference(node p) requires (F::tag_raised(bbst_value_tag)) {
+    p->push();
+    return p->v;
+  }
+  T sum(node p) requires (F::tag_raised(bbst_sum_tag)) {
+    if constexpr (invocable_r(T,id,F)) if (p==nullptr) return base::f.id();
     p->push();
     return p->sum;
   }
   void value_update(node p,T u) requires (F::tag_raised(bbst_value_update_tag)) {
-    p->value_update(u);
+    if (p!=nullptr) p->value_update(u);
   }
   template<class P>
   requires (invocable_r<bool,P,T&>&&F::tag_raised(bbst_value_tag))
@@ -498,10 +504,10 @@ struct splay_tree : splay_tree<T,void,F,Node> {
   using base = splay_tree<T,void,F,Node>;
   using base::base;
   void lazy_update(node p,U u) requires (F::tag_raised(bbst_lazy_tag)) {
-    p->lazy_update(u);
+    if (p!=nullptr) p->lazy_update(u);
   }
   void lazy(node p,U u) requires (F::tag_raised(bbst_lazy_tag)) {
-    p->lazy_update(u);
+    if (p!=nullptr) p->lazy_update(u);
   }
 };
 

@@ -4,8 +4,9 @@
 
 int main(){
   ios::sync_with_stdio(false),cin.tie(0);
-  splay_tree tree(guide(merge,tag)(
+  splay_tree tree(guide(merge,id,tag)(
     [](long long a,long long b){ return a+b; },
+    single(0ll),
     bbst_sum_tag|bbst_reversible_tag|bbst_size_tag
   ));
   auto root = tree.make_dummy();

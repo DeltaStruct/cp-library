@@ -9,11 +9,9 @@ struct segment_tree {
   runtime_array<T> segtree;
   F f;
   segment_tree(int _n,F _f) : n(_n),segtree(2*n),f(std::move(_f)) {
-    if constexpr (invocable_r(T,idi,F,int)){
-      for (int i(0);i < n;++i) segtree.init(i,f.idi(i));
-      build();
-    } else if constexpr (invocable_r(T,id,F)) segtree.init_all(f.id()),build();
-    else if constexpr (is_default_constructible_v<T>) build();
+    if constexpr (invocable_r(T,idi,F,int)) for (int i(0);i < n;++i) segtree[n+i] = f.idi(i);
+    else if constexpr (invocable_r(T,id,F)) segtree.fill(f.id()),build();
+    build();
   }
   template<input_iterator I>
   segment_tree(I a,I b,F _f) : n((int)distance(a,b)),segtree(2*n),f(std::move(_f)) {
@@ -40,7 +38,7 @@ struct segment_tree {
     return segtree[n+x];
   }
   T& update(int x,const T& y) requires invocable_r(T,update,F,T&,T&) {
-    segtree[n+x] = p(segtree[n+x],y);
+    segtree[n+x] = f.update(segtree[n+x],y);
     update(x);
     return segtree[n+x];
   }
@@ -64,6 +62,9 @@ struct segment_tree {
   }
   T* internal(){
     return segtree;
+  }
+  T& top(){
+    return segtree[1];
   }
   using iterator = T*;
   iterator begin(){

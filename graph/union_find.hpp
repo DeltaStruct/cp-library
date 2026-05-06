@@ -5,6 +5,7 @@
 struct fast_union_find {
   int n;
   runtime_array<int> par,sz;
+  fast_union_find() = default;
   fast_union_find(int _n) : n(_n),par(n,-1),sz(n,1) {}
   ~fast_union_find(){}
   int leader_compress(int x){

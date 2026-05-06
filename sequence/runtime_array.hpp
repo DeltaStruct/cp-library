@@ -13,6 +13,7 @@ struct runtime_array {
   runtime_array() : sz(0),ptr(nullptr) {}
   runtime_array(int n) : sz(n),ptr(uinit_alloc()) {
     if constexpr (is_default_constructible_v<T>) uninitialized_default_construct_n(ptr,sz);
+    else static_assert(false_v<T>);
   }
   runtime_array(int n,T x) : sz(n),ptr(uinit_alloc()) {
     uninitialized_fill_n(ptr,sz,x);
@@ -37,16 +38,8 @@ struct runtime_array {
   ~runtime_array(){
     clear();
   }
-  T& init(int i,T x){
-    if constexpr (is_default_constructible_v<T>) return ptr[i] = x;
-    return *construct_at(ptr+i,std::move(x));
-  }
-  void init_all(T x){
-    if constexpr (is_default_constructible_v<T>) fill_n(ptr,sz,x);
-    else uninitialized_fill_n(ptr,sz,x);
-  }
-  void init_all(){
-    if constexpr (!is_default_constructible_v<T>) uninitialized_default_construct_n(ptr,sz);
+  void fill(T v){
+    fill_n(ptr,sz,v);
   }
   runtime_array& operator=(const runtime_array& A){
     clear();

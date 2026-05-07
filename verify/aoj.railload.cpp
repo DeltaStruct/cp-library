@@ -14,7 +14,7 @@ int main(){
   graph H(n);
   for (auto [a,b,c]:E){
     if (A[a]+c+B[b]==A[t]) H.emplace_directed(a,b);
-    if (A[b]+c+B[a]==A[t]) H.emplace_directed(a,b);
+    if (A[b]+c+B[a]==A[t]) H.emplace_directed(b,a);
   }
   int q; cin >> q;
   vector<pair<int,int>> Q(q);

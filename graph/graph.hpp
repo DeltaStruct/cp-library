@@ -1,88 +1,121 @@
 #pragma once
 #include "assets/stdc++.hpp"
+#include <ranges>
 
-template<typename T>
+template<typename T = void>
 struct edge;
 
 template<>
 struct edge<void> {
-  using type = void;
-  int from,to;
-  edge(int f,int t) : from(f),to(t) {}
-  edge& operator=(const int& x){
-    to = x;
-    return *this;
-  }
+  int to,idx;
+  edge(int _to,int _idx) : to(_to),idx(_idx) {}
   operator int(){
     return to;
   }
-  bool operator==(edge& x){
-    return (to==x.to&&from==x.from);
+  operator int() const {
+    return to;
   }
-  auto operator<=>(edge& x){
-    return to<=>x.to;
-  }
+  struct cost_t {};
+  cost_t cost{};
 };
 
 template<typename T>
-struct edge : public edge<void> {
-  using type = T;
+struct edge : edge<void> {
   using base = edge<void>;
-  T weight;
-  edge(int f,int t,T w) : base(f,t),weight(move(w)) {}
-  bool operator==(edge x){
-    return (base::operator==(x)&&weight==x.weight);
-  }
-  auto operator<=>(edge x){
-    if (to==x.to) return weight<=>x.weight;
-    return base::operator<=>(x);
-  }
+  using cost_t = T;
+  T cost;
+  edge(int _to,int _idx,T _cost) : base(_to,_idx),cost(_cost) {}
 };
 
 template<typename T>
-struct std::tuple_size<edge<T>> : integral_constant<size_t,3> {};
-
-template<size_t i,typename T>
-struct std::tuple_element<i,edge<T>> { using type = int; };
+struct std::tuple_size<edge<T>> : integral_constant<size_t,2> {};
 
 template<typename T>
-struct std::tuple_element<1,edge<T>> { using type = T; };
+struct std::tuple_element<0,edge<T>> {
+  using type = int;
+};
 
+template<typename T>
+struct std::tuple_element<1,edge<T>> {
+  using type = typename edge<T>::cost_t;
+};
 template<size_t I,typename T>
-tuple_element<I,edge<T>> get(const edge<T>& G){
-  if constexpr (I==0) return G.to;
-  else if constexpr (I==1) return G.weight;
-  else if constexpr (I==2) return G.from;
+tuple_element<I,edge<T>> get(const edge<T>& e){
+  if constexpr (I==0) return e.to;
+  else if constexpr (I==1) return e.cost;
+  else static_assert(false_v<T>);
 }
 
 template<size_t I,typename T>
-tuple_element<I,edge<T>>& get(edge<T>& G){
-  if constexpr (I==0) return G.to;
-  else if constexpr (I==1) return G.weight;
-  else if constexpr (I==2) return G.from;
+decltype(auto) get(edge<T>& e){
+  if constexpr (I==0) return e.to;
+  else if constexpr (I==1) return e.cost;
+  else static_assert(false_v<T>);
 }
 
-template<typename T>
-edge(int,int,T) -> edge<T>;
-
-template<typename T>
-struct graph : private vector<vector<edge<T>>> {
-  static constexpr bool is_weighted = same_as<T,void>;
-  using super = vector<vector<edge<T>>>;
-  using super::vector;
-  using super::operator[],super::at,super::data,super::front,super::back;
-  using super::begin,super::end,super::rbegin,super::rend;
-  using super::size,super::empty;
-  using super::assign,super::resize,super::push_back,super::emplace_back;
-  using super::pop_back,super::erase;
-  graph(std::vector<edge<T>>& E,bool directed = false){
-    for (auto& a:E) add(a,directed);
+template<typename T = void,class Edge = edge<T>>
+struct edges : private vector<Edge> {
+  using base = vector<Edge>;
+  using self = edges;
+  using base::base;
+  using base::operator[],base::at,base::data,base::front,base::back;
+  using base::size,base::resize,base::empty,base::capacity,base::reserve,base::shrink_to_fit;
+  using base::assign,base::insert,base::emplace,base::erase,base::swap,base::clear;
+  using base::push_back,base::emplace_back,base::pop_back;
+  using base::begin,base::end,base::rbegin,base::rend;
+  auto to(){
+    return (*this)|views::keys;
   }
-  auto to(int x){ return (*this)[x]|views::keys; }
-  auto weight(int x){ return (*this)[x]|views::values; }
-  auto from(int x){ return (*this)[x]|views::elements<2>; }
-  void add(edge<T> x,bool directed = false){
-    if (!directed) (*this)[x.to].emplace_back(edge<T>(x.to,x.from,x.weight));
-    (*this)[x.from].emplace_back(move(x));
+  auto to() const {
+    return (*this)|views::keys;
+  }
+  auto cost(){
+    return (*this)|views::values;
+  }
+  auto cost() const {
+    return (*this)|views::values;
   }
 };
+
+template<typename T = void,class Edges = edges<T>>
+struct graph : private vector<Edges> {
+  using base = vector<Edges>;
+  using self = graph;
+  using base::base;
+  using base::operator[],base::at,base::data,base::front,base::back;
+  using base::size,base::resize,base::empty,base::capacity,base::reserve,base::shrink_to_fit;
+  using base::assign,base::insert,base::emplace,base::erase,base::swap,base::clear;
+  using base::push_back,base::emplace_back,base::pop_back;
+  using base::begin,base::end,base::rbegin,base::rend;
+  int idx = 0;
+  template<typename... Args>
+  void emplace_directed(int a,int b,Args&&... args){
+    operator[](a).emplace_back(b,idx++,T(std::forward<Args>(args)...));
+  }
+  void emplace_directed(int a,int b) requires same_as<T,void> {
+    operator[](a).emplace_back(b,idx++);
+  }
+  template<typename... Args>
+  void emplace_undirected(int a,int b,Args&&... args){
+    operator[](a).emplace_back(b,idx++,T(std::forward<Args>(args)...));
+    operator[](b).emplace_back(a,operator[](a).back().cost);
+  }
+  void emplace_undirected(int a,int b) requires same_as<T,void> {
+    operator[](a).emplace_back(b,idx),operator[](b).emplace_back(a,idx++);
+  }
+  auto to(int x){
+    return operator[](x).to();
+  }
+  auto to(int x) const {
+    return operator[](x).to();
+  }
+  auto cost(int x){
+    return operator[](x).cost();
+  }
+  auto cost(int x) const {
+    return operator[](x).cost();
+  }
+};
+
+graph() -> graph<void>;
+graph(int) -> graph<void>;

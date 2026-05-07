@@ -40,7 +40,7 @@ struct std::tuple_element<1,edge<T>> {
   using type = typename edge<T>::cost_t;
 };
 template<size_t I,typename T>
-tuple_element<I,edge<T>> get(const edge<T>& e){
+decltype(auto) get(const edge<T>& e){
   if constexpr (I==0) return e.to;
   else if constexpr (I==1) return e.cost;
   else static_assert(false_v<T>);
@@ -97,8 +97,8 @@ struct graph : private vector<Edges> {
   }
   template<typename... Args>
   void emplace_undirected(int a,int b,Args&&... args){
-    operator[](a).emplace_back(b,idx++,T(std::forward<Args>(args)...));
-    operator[](b).emplace_back(a,operator[](a).back().cost);
+    operator[](a).emplace_back(b,idx,T(std::forward<Args>(args)...));
+    operator[](b).emplace_back(a,idx++,operator[](a).back().cost);
   }
   void emplace_undirected(int a,int b) requires same_as<T,void> {
     operator[](a).emplace_back(b,idx),operator[](b).emplace_back(a,idx++);

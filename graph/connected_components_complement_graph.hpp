@@ -4,27 +4,34 @@
 
 struct connected_components_complement_graph : private union_find<void> {
   using base = union_find<void>;
-  vector<vector<int>> G;
+  graph<void> G;
   vector<int> V;
   connected_components_complement_graph(int _n) : base(_n),G(_n),V() {}
   void add_edge(int a,int b){
-    if (a<b) swap(a,b);
-    G[a].emplace_back(b);
+    G.emplace_undirected(a,b);
   }
   void build(){
-    set<int> S;
+    list<int> S;
     for (int i(0);i < n;++i){
-      set<int> T;
-      for (int k:G[i]){
-        k = base::leader(k);
-        auto it = S.lower_bound(k);
-        if (it!=S.end()&&*it==k) T.emplace(k),S.erase(it);
-      }
-      for (int k:S) base::connect(k,i);
-      S = std::move(T);
-      S.emplace(base::leader(i));
+      S.emplace_back(i);
+      sort(G[i].begin(),G[i].end(),less<int>());
     }
-    V.assign(S.begin(),S.end());
+    queue<int> que;
+    runtime_array<int> E(n);
+    while(!S.empty()){
+      int start = *S.begin(); S.erase(S.begin());
+      que.emplace(start);
+      while(!que.empty()){
+        int x = que.front(); que.pop();
+        for (int y:G[x]) E[y] = 1;
+        auto it = S.begin();
+        while(it!=S.end()) if (E[*it]==0){
+          base::connect(x,*it),que.emplace(*it),it=S.erase(it);
+        } else ++it;
+        for (int y:G[x]) E[y] = 0;
+      }
+      V.emplace_back(base::leader(start));
+    }
   }
   int belong(int x){
     assert((int)V.size()); // no call build();

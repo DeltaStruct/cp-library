@@ -3,10 +3,10 @@
 #include "sequence/runtime_array.hpp"
 
 struct fast_union_find {
-  int n;
+  int n,cnt;
   runtime_array<int> par,sz;
   fast_union_find() = default;
-  fast_union_find(int _n) : n(_n),par(n,-1),sz(n,1) {}
+  fast_union_find(int _n) : n(_n),cnt(n),par(n,-1),sz(n,1) {}
   ~fast_union_find(){}
   int leader_compress(int x){
     int ret = x;
@@ -25,7 +25,7 @@ struct fast_union_find {
     x = leader(x),y = leader(y);
     if (x==y) return false;
     if (sz[x]>sz[y]) swap(x,y);
-    par[x] = y,sz[y] += sz[x];
+    par[x] = y,sz[y] += sz[x],--cnt;
     return true;
   }
   int size(){
@@ -33,6 +33,9 @@ struct fast_union_find {
   }
   int size(int x){
     return sz[leader(x)];
+  }
+  int count_components(){
+    return cnt;
   }
 };
 

@@ -52,6 +52,10 @@ struct runtime_array {
     sz = A.sz,ptr = A.ptr,A.sz = 0,A.ptr = nullptr;
     return *this;
   }
+  template<typename... Args>
+  void assign(Args&&... args){
+    (*this) = runtime_array<T>(std::forward<Args>(args)...);
+  }
   operator vector<T>(){
     return vector<T>(ptr,ptr+sz);
   }

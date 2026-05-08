@@ -7,7 +7,7 @@ requires same_as<F,void>||invocable_r(void,split,F,T&,T&)
 struct undo_able_union_find : public union_find<T,F> {
   using base = union_find<T,F>;
   using base::union_find;
-  using base::par,base::sz,base::lst;
+  using base::par,base::sz,base::cnt,base::lst;
   stack<pair<int,int>> S;
   int inner = 0;
   virtual int leader(int x){
@@ -28,7 +28,7 @@ struct undo_able_union_find : public union_find<T,F> {
     while(i--){
       auto [a,b] = S.top(); S.pop();
       if (a==-1) continue;
-      par[a] = -1,sz[b] -= sz[a],swap(lst[a],lst[b]);
+      par[a] = -1,sz[b] -= sz[a],++cnt,swap(lst[a],lst[b]);
       if constexpr (!same_as<F,void>) base::f.split(base::val[b],base::val[a]);
     }
   }
